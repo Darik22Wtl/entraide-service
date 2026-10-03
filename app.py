@@ -8,10 +8,10 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS AVEC MOTIFS ET DÉCORATIONS VISUELLES ---
+# --- STYLE CSS AVEC MOTIFS THÉMATIQUES POUR LA BARRE LATÉRALE ET LE FOND ---
 st.markdown("""
     <style>
-    /* Fond global avec un motif géométrique subtil et dégradé chaleureux */
+    /* Fond global avec un motif géométrique chaleureux */
     .stApp {
         background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
         background-image: radial-gradient(#ff8008 0.75px, transparent 0.75px), radial-gradient(#ff8008 0.75px, #ffecd2 0.75px);
@@ -19,7 +19,31 @@ st.markdown("""
         background-position: 0 0, 15px 15px;
     }
     
-    /* Bannière principale ultra-décorée avec bordure lumineuse */
+    /* Personnalisation complète de la barre latérale (sidebar) avec des motifs d'icônes de services */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #2c3e50 0%, #4ca1af 100%) !important;
+        background-image: 
+            radial-gradient(white 15%, transparent 16%),
+            radial-gradient(white 15%, transparent 16%);
+        background-size: 60px 60px;
+        background-position: 0 0, 30px 30px;
+        background-repeat: repeat;
+        /* Ajout d'éléments visuels et d'icônes de services en arrière-plan discret via pseudo-élément */
+        position: relative;
+    }
+    
+    /* On rend le texte et les éléments de la sidebar bien visibles sur le fond sombre/coloré */
+    [data-testid="stSidebar"] * {
+        color: #ffffff !important;
+    }
+    
+    /* Style spécifique pour les widgets interactifs dans la sidebar (select, inputs si besoin) */
+    [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+    }
+
+    /* Bannière principale ultra-décorée */
     .custom-banner {
         background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         padding: 45px 25px;
@@ -33,12 +57,13 @@ st.markdown("""
         overflow: hidden;
     }
     .custom-banner::before {
-        content: "⭐ 🤝 🌟 💡 🛠️";
+        content: "🌳 🛠️ 📚 🍳 🚗 💻 🐾";
         position: absolute;
         top: -10px;
         right: -10px;
-        font-size: 5rem;
-        opacity: 0.15;
+        font-size: 4rem;
+        opacity: 0.2;
+        letter-spacing: 10px;
     }
     .custom-banner h1 {
         color: white !important;
@@ -63,6 +88,9 @@ st.markdown("""
         border-top: 10px solid #ff416c;
         backdrop-filter: blur(10px);
     }
+    .login-box * {
+        color: #333333 !important;
+    }
 
     /* Cartes de service stylisées avec motif latéral */
     .service-card {
@@ -75,6 +103,9 @@ st.markdown("""
         box-shadow: 0 8px 20px rgba(255, 65, 108, 0.1);
         transition: all 0.3s ease;
     }
+    .service-card * {
+        color: #2c3e50 !important;
+    }
     .service-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(255, 65, 108, 0.2);
@@ -84,7 +115,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v4.db"
+DB_NAME = "entraide_v5.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -206,8 +237,8 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Barre latérale
-st.sidebar.header("👤 Mon Profil Voisin")
+# Barre latérale (Sidebar) décorée avec des icônes thématiques (arbres, jardinage, etc.)
+st.sidebar.markdown("### 🌳 🏡 Mon Profil Voisin")
 st.sidebar.success(f"Connecté : *{current_username}*")
 st.sidebar.write(f"📧 E-mail : {email_input}")
 st.sidebar.write(f"📍 Ville : *{city_input}*")
@@ -218,6 +249,7 @@ if st.sidebar.button("Se déconnecter"):
     st.rerun()
 
 st.sidebar.markdown("---")
+st.sidebar.markdown("### 🛠️ 🌱 Services & Actions")
 menu = st.sidebar.selectbox("Navigation", ["🔍 Services dans ma ville", "➕ Proposer un service", "📋 Mes services partagés"])
 
 category_icons = {
