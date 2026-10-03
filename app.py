@@ -215,23 +215,23 @@ elif menu == "➕ Proposer un service":
 
 elif menu == "📋 Mes services partagés":
     st.header(f"📋 Les services proposés par {username_input}")
-
+    
     conn = get_connection()
-cursor = conn.cursor()
-cursor.execute("SELECT id, city, category, title, description, cost, status, completed_by FROM services WHERE author = ?", (username_input,))
-my_services = cursor.fetchall()
-conn.close()
-
-if not my_services:
-    st.info("Vous n'avez publié aucun service pour l'instant.")
-else:
-    for s in my_services:
-        service_id, city, category, title, description, cost, status, completed_by = s
-        icon = category_icons.get(category, "✨")
-        
-        with st.container():
-            st.markdown(f"""
-                div class="service-card">
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, city, category, title, description, cost, status, completed_by FROM services WHERE author = ?", (username_input,))
+    my_services = cursor.fetchall()
+    conn.close()
+    
+    if not my_services:
+        st.info("Vous n'avez publié aucun service pour l'instant.")
+    else:
+        for s in my_services:
+            service_id, city, category, title, description, cost, status, completed_by = s
+            icon = category_icons.get(category, "✨")
+            
+            with st.container():
+                st.markdown(f"""
+                    <div class="service-card">
                         <h3>{icon} {title}</h3>
                         <p><b>Catégorie :</b> {category} | <b>Ville :</b> {city}</p>
                         <p><b>Coût :</b> {cost} crédits | <b>Statut :</b> <code>{status}</code></p>
