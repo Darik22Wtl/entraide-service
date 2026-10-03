@@ -1,4 +1,4 @@
-import sqlite3
+mport sqlite3
 import streamlit as st
 
 # --- CONFIGURATION DE LA PAGE ---
@@ -8,9 +8,38 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS POUR LES COULEURS ET LE DESIGN ---
+# --- STYLE CSS AVANCÉ & MODERNE ---
 st.markdown("""
-    
+    <style>
+    /* Style général de l'en-tête */
+    .main-header {
+        font-size: 2.8rem;
+        color: #FF4B4B;
+        text-align: center;
+        font-weight: 800;
+        margin-bottom: 0px;
+    }
+    .sub-header {
+        text-align: center;
+        color: #4F8BF9;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        font-weight: 500;
+    }
+    /* Cartes de service élégantes avec effet d'ombre */
+    .service-card {
+        background-color: #ffffff;
+        padding: 22px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+    .service-card:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    }
+    </style>
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
@@ -51,16 +80,16 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Initialisation immédiate de la base
 init_db()
 
 def get_connection():
     return sqlite3.connect(DB_NAME)
 
-# --- GESTION DE L'UTILISATEUR (PREMIÈRE CONNEXION) ---
+# --- GESTION DE L'UTILISATEUR (BARRE LATÉRALE STYLISÉE) ---
 st.markdown('<p class="main-header">🤝 Entraide & Services Locaux</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">Le réseau de solidarité et d\'échange entre voisins</p>', unsafe_allow_html=True)
 
-# Utilisation de la barre latérale pour la configuration initiale si non connecté
 st.sidebar.header("👤 Mon Profil Voisin")
 username_input = st.sidebar.text_input("Votre pseudo", value="")
 city_input = st.sidebar.text_input("Votre ville", value="Brive-la-Gaillarde")
@@ -69,7 +98,6 @@ if not username_input:
     st.warning("👋 Bienvenue ! Veuillez entrer votre pseudo et votre ville dans la barre latérale à gauche pour commencer.")
     st.stop()
 
-# Vérifier ou créer l'utilisateur dans la base
 def get_or_create_user(username, city):
     conn = get_connection()
     cursor = conn.cursor()
@@ -87,14 +115,18 @@ def get_or_create_user(username, city):
     return user
 
 user_data = get_or_create_user(username_input, city_input)
-st.sidebar.success(f"Connecté en tant que : *{username_input}*")
+
+st.sidebar.markdown("---")
+st.sidebar.success(f"Connecté : *{username_input}*")
 st.sidebar.write(f"📍 Ville : *{city_input}*")
-st.sidebar.write(f"💰 Vos crédits : *{user_data[2]}*")
+# Affichage stylisé des crédits avec une métrique Streamlit
+st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_data[2]} pts")
+st.sidebar.markdown("---")
 
 # --- MENU DE NAVIGATION ---
 menu = st.sidebar.selectbox("Navigation", ["🔍 Services dans ma ville", "➕ Proposer un service", "📋 Mes services partagés"])
 
-# Dictionnaire des motifs / émojis par catégorie
+# Dictionnaire des émojis par catégorie
 category_icons = {
     "🛠️ Bricolage & Réparation": "🛠️",
     "🌱 Jardinage & Extérieur": "🌱",
@@ -174,20 +206,21 @@ if menu == "🔍 Services dans ma ville":
                             st.text(f"{m[0]} : {m[1]}")
                     else:
                         st.write("Aucun message pour l'instant. Discutez pour vous organiser !")
-                    
-                with st.form(key=f"msg_form_{service_id}"):
-                    new_msg = st.text_input("Votre message", key=f"input_msg_{service_id}")
-                    send_btn = st.form_submit_button("Envoyer")
-                    if send_btn and new_msg.strip():
-                        conn = get_connection()
-                        cursor = conn.cursor()
-                        cursor.execute("INSERT INTO messages (service_id, sender, content) VALUES (?, ?, ?)", 
-                                       (service_id, username_input, new_msg))
-                        conn.commit()
-                        conn.close()
-                        st.success("Message envoyé !")
-                        st.rerun()
-            st.divider()
+                        
+                    with st.form(key=f"msg_form_{service_id}"):
+                        new_msg = st.text_input("Votre message", key=f"input_msg_{service_id}")
+                        send_btn = st.form_submit_button("Envoyer")
+                        if send_btn and new_msg.strip():
+                            conn = get_connection()
+                            cursor = conn.cursor()
+                            cursor.execute("INSERT INTO messages (service_id, sender, content) VALUES (?, ?, ?)", 
+                                           (service_id, username_input, new_msg))
+                            conn.commit()
+                            conn.close()
+                            st.success("Message envoyé !")
+                            st.rerun()
+                st.divider()
+
 elif menu == "➕ Proposer un service":
     st.header("➕ Proposer un nouveau service")
     
