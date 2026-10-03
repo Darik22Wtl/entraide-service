@@ -190,28 +190,28 @@ if menu == "🔍 Services dans ma ville":
             st.divider()
 elif menu == "➕ Proposer un service":
     st.header("➕ Proposer un nouveau service")
-
+    
     with st.form("service_form"):
-    category = st.selectbox("Choisissez une catégorie", list(category_icons.keys()))
-    title = st.text_input("Titre du service (ex: Tonte de pelouse, Cours de maths...)")
-    description = st.text_area("Description détaillée de ce que vous proposez")
-    cost = st.number_input("Coût en crédits demandé", min_value=1, value=5, step=1)
-    
-    submitted = st.form_submit_button("Publier le service")
-    
-    if submitted:
-        if title.strip() and description.strip():
-            conn = get_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO services (author, city, category, title, description, cost, status)
-                VALUES (?, ?, ?, ?, ?, ?, 'disponible')
-            """, (username_input, city_input, category, title, description, cost))
-            conn.commit()
-            conn.close()
-            st.success("Votre service a été publié avec succès pour votre ville !")
-        else:
-            st.error("Veuillez remplir tous les champs du formulaire.")
+        category = st.selectbox("Choisissez une catégorie", list(category_icons.keys()))
+        title = st.text_input("Titre du service (ex: Tonte de pelouse, Cours de maths...)")
+        description = st.text_area("Description détaillée de ce que vous proposez")
+        cost = st.number_input("Coût en crédits demandé", min_value=1, value=5, step=1)
+        
+        submitted = st.form_submit_button("Publier le service")
+        
+        if submitted:
+            if title.strip() and description.strip():
+                conn = get_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO services (author, city, category, title, description, cost, status)
+                    VALUES (?, ?, ?, ?, ?, ?, 'disponible')
+                """, (username_input, city_input, category, title, description, cost))
+                conn.commit()
+                conn.close()
+                st.success("Votre service a été publié avec succès pour votre ville !")
+            else:
+                st.error("Veuillez remplir tous les champs du formulaire.")
 
 elif menu == "📋 Mes services partagés":
     st.header(f"📋 Les services proposés par {username_input}")
