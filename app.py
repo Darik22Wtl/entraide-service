@@ -8,29 +8,70 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS AVEC VRAIS MOTIFS VISIBLES ET CORRECTIONS ---
+# --- STYLE CSS AVEC MOTIFS D'ÉMOJIS DE SERVICES PARTOUT ---
 st.markdown("""
     <style>
-    /* Fond global avec un motif à carreaux/géométrique très visible partout */
+    /* Fond global avec quadrillage ET une grille dense d'émojis de services en arrière-plan */
     .stApp {
         background-color: #ffecd2;
         background-image: 
-            linear-gradient(45deg, rgba(255, 65, 108, 0.15) 25%, transparent 25%), 
-            linear-gradient(-45deg, rgba(255, 65, 108, 0.15) 25%, transparent 25%), 
-            linear-gradient(45deg, transparent 75%, rgba(255, 65, 108, 0.15) 75%), 
-            linear-gradient(-45deg, transparent 75%, rgba(255, 65, 108, 0.15) 75%);
-        background-size: 40px 40px;
-        background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+            radial-gradient(rgba(255, 65, 108, 0.12) 2px, transparent 2px),
+            linear-gradient(45deg, rgba(255, 65, 108, 0.08) 25%, transparent 25%), 
+            linear-gradient(-45deg, rgba(255, 65, 108, 0.08) 25%, transparent 25%), 
+            linear-gradient(45deg, transparent 75%, rgba(255, 65, 108, 0.08) 75%), 
+            linear-gradient(-45deg, transparent 75%, rgba(255, 65, 108, 0.08) 75%);
+        background-size: 60px 60px, 40px 40px, 40px 40px, 40px 40px, 40px 40px;
+        background-position: 0 0, 0 0, 0 20px, 20px -20px, -20px 0px;
     }
     
-    /* Barre latérale (sidebar) avec des motifs géométriques bien marqués */
+    /* Ajout d'un calque d'émojis de services répétés en filigrane sur tout le fond de l'application */
+    .stApp::before {
+        content: "🚗 🌳 🛠️ 🍳 📚 🌱 💻 🐾 🔧 🏡 🚗 🌳 🛠️ 🍳 📚 🌱 💻 🐾 🔧 🏡 🚗 🌳 🛠️ 🍳 📚 🌱 💻 🐾 🔧 🏡 🚗 🌳 🛠️ 🍳 📚 🌱 💻 🐾 🔧 🏡";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        font-size: 1.8rem;
+        line-height: 80px;
+        letter-spacing: 50px;
+        word-spacing: 50px;
+        opacity: 0.08;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    
+    /* Barre latérale (sidebar) avec dégradé, quadrillage et émojis de services en fond */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%) !important;
         background-image: 
-            radial-gradient(rgba(255, 255, 255, 0.3) 30%, transparent 31%),
-            radial-gradient(rgba(255, 255, 255, 0.2) 30%, transparent 31%);
-        background-size: 30px 30px;
-        background-position: 0 0, 15px 15px;
+            radial-gradient(rgba(255, 255, 255, 0.25) 2px, transparent 2px),
+            radial-gradient(rgba(255, 255, 255, 0.15) 30%, transparent 31%);
+        background-size: 30px 30px, 50px 50px;
+    }
+    
+    /* Filigrane d'émojis de services spécifique à l'intérieur de la barre latérale */
+    [data-testid="stSidebar"]::before {
+        content: "🚗🌳🛠️🍳📚🌱💻🐾🔧🏡🚗🌳🛠️🍳📚🌱💻🐾🔧🏡🚗🌳🛠️🍳📚🌱💻🐾🔧🏡🚗🌳🛠️🍳📚🌱💻🐾🔧🏡";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        font-size: 1.4rem;
+        line-height: 60px;
+        letter-spacing: 20px;
+        opacity: 0.07;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    /* S'assurer que le contenu de la sidebar reste bien au-dessus du filigrane */
+    [data-testid="stSidebar"] > div:first-child {
+        position: relative;
+        z-index: 1;
     }
     
     /* Texte général dans la sidebar en blanc */
@@ -53,7 +94,7 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* CORRECTION DU BOUTON DE DÉCONNEXION (et des boutons de la sidebar) */
+    /* Style du bouton de déconnexion et des boutons de la sidebar */
     [data-testid="stSidebar"] .stButton button {
         background-color: #ff416c !important;
         color: #ffffff !important;
@@ -89,6 +130,7 @@ st.markdown("""
         border: 3px solid rgba(255, 255, 255, 0.6);
         position: relative;
         overflow: hidden;
+        z-index: 1;
     }
     .custom-banner::before {
         content: "🌳 🌲 🌱 🛠️ 📚 🍳 🚗 💻 🐾 🏡 🌻 🔧";
@@ -121,6 +163,8 @@ st.markdown("""
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         border-top: 10px solid #ff416c;
         backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 1;
     }
     .login-box * {
         color: #333333 !important;
@@ -136,6 +180,8 @@ st.markdown("""
         border-left: 8px solid #ff416c;
         box-shadow: 0 8px 20px rgba(255, 65, 108, 0.1);
         transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
     }
     .service-card * {
         color: #2c3e50 !important;
@@ -149,7 +195,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v8.db"
+DB_NAME = "entraide_v9.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -271,7 +317,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Barre latérale (Sidebar) décorée
+# Barre latérale (Sidebar) riche en motifs et émojis
 st.sidebar.markdown("### 🌳 🌻 Mon Profil Voisin")
 st.sidebar.success(f"Connecté : *{current_username}*")
 st.sidebar.write(f"📧 E-mail : {email_input}")
