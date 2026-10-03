@@ -8,42 +8,60 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS AVANCÉ & MODERNE ---
+# --- STYLE CSS MODERNE ET COLORÉ ---
 st.markdown("""
     <style>
-    /* Style général de l'en-tête */
+    /* Fond général de l'application */
+    .stApp {
+        background-color: #f4f6f9;
+    }
+    
+    /* En-tête principal coloré avec dégradé */
     .main-header {
-        font-size: 2.8rem;
-        color: #FF4B4B;
+        font-size: 2.6rem;
+        color: #ffffff;
         text-align: center;
         font-weight: 800;
-        margin-bottom: 0px;
+        padding: 25px;
+        background: linear-gradient(135deg, #FF4B4B, #FF8F00);
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(255, 75, 75, 0.25);
+        margin-bottom: 10px;
     }
+    
     .sub-header {
         text-align: center;
-        color: #4F8BF9;
-        font-size: 1.2rem;
-        margin-bottom: 30px;
+        color: #666666;
+        font-size: 1.15rem;
+        margin-bottom: 35px;
         font-weight: 500;
     }
-    /* Cartes de service élégantes avec effet d'ombre */
+
+    /* Cartes de service ultra-modernes */
     .service-card {
         background-color: #ffffff;
         padding: 22px;
-        border-radius: 12px;
+        border-radius: 14px;
         margin-bottom: 20px;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .service-card:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Style de la barre latérale */
+    [data-testid="stSidebar"] {
+        background-color: #ffffff;
+        border-right: 1px solid #e2e8f0;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v2.db"
+# --- INITIALISATION DE LA BASE DE DONNÉES (VERSION E-MAIL) ---
+DB_NAME = "entraide_email.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -51,7 +69,8 @@ def init_db():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            username TEXT NOT NULL,
             city TEXT DEFAULT 'Brive-la-Gaillarde',
             credits INTEGER DEFAULT 10
         )
@@ -80,47 +99,52 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Initialisation immédiate de la base
 init_db()
 
 def get_connection():
     return sqlite3.connect(DB_NAME)
 
-# --- GESTION DE L'UTILISATEUR (BARRE LATÉRALE STYLISÉE) ---
+# --- EN-TÊTE DE L'APPLICATION ---
 st.markdown('<p class="main-header">🤝 Entraide & Services Locaux</p>', unsafe_allow_html=True)
 st.markdown('<p class="sub-header">Le réseau de solidarité et d\'échange entre voisins</p>', unsafe_allow_html=True)
 
-st.sidebar.header("👤 Mon Profil Voisin")
+# --- BARRE LATÉRALE : CONNEXION PAR E-MAIL ---
+st.sidebar.header("🔐 Connexion Voisin")
+email_input = st.sidebar.text_input("Adresse e-mail")
 username_input = st.sidebar.text_input("Votre pseudo", value="")
 city_input = st.sidebar.text_input("Votre ville", value="Brive-la-Gaillarde")
 
-if not username_input:
-    st.warning("👋 Bienvenue ! Veuillez entrer votre pseudo et votre ville dans la barre latérale à gauche pour commencer.")
+if not email_input or not username_input:
+    st.warning("👋 Bienvenue ! Veuillez renseigner votre e-mail, votre pseudo et votre ville dans la barre latérale pour accéder à l'application.")
     st.stop()
 
-def get_or_create_user(username, city):
+def get_or_create_user(email, username, city):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, city, credits FROM users WHERE username = ?", (username,))
+    cursor.execute("SELECT id, username, city, credits FROM users WHERE email = ?", (email,))
     user = cursor.fetchone()
     if not user:
-        cursor.execute("INSERT INTO users (username, city, credits) VALUES (?, ?, 10)", (username, city))
+        cursor.execute("INSERT INTO users (email, username, city, credits) VALUES (?, ?, ?, 10)", (email, username, city))
         conn.commit()
-        cursor.execute("SELECT id, city, credits FROM users WHERE username = ?", (username,))
+        cursor.execute("SELECT id, username, city, credits FROM users WHERE email = ?", (email,))
         user = cursor.fetchone()
     else:
-        cursor.execute("UPDATE users SET city = ? WHERE username = ?", (city, username))
+        # Met à jour le pseudo ou la ville si modifiés
+        cursor.execute("UPDATE users SET username = ?, city = ? WHERE email = ?", (username, city, email))
         conn.commit()
     conn.close()
     return user
 
-user_data = get_or_create_user(username_input, city_input)
+user_data = get_or_create_user(email_input, username_input, city_input)
+current_username = user_data[1]
 
 st.sidebar.markdown("---")
-st.sidebar.success(f"Connecté : *{username_input}*")
+st.sidebar.success(f"Connecté : *{current_username}*")
+st.sidebar.write(f"📧 E-mail : {email_input}")
 st.sidebar.write(f"📍 Ville : *{city_input}*")
-# Affichage stylisé des crédits avec une métrique Streamlit
-st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_data[2]} pts")
+
+# Affichage stylisé des crédits
+st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_data[3]} pts")
 st.sidebar.markdown("---")
 
 # --- MENU DE NAVIGATION ---
@@ -164,17 +188,17 @@ if menu == "🔍 Services dans ma ville":
                     </div>
                 """, unsafe_allow_html=True)
                 
-                if status == "disponible" and author != username_input:
+                if status == "disponible" and author != current_username:
                     if st.button(f"Prendre ce service ({cost} crédits)", key=f"take_{service_id}"):
                         conn = get_connection()
                         cursor = conn.cursor()
-                        cursor.execute("SELECT credits FROM users WHERE username = ?", (username_input,))
+                        cursor.execute("SELECT credits FROM users WHERE email = ?", (email_input,))
                         u_cred = cursor.fetchone()[0]
                         
                         if u_cred >= cost:
-                            cursor.execute("UPDATE users SET credits = credits - ? WHERE username = ?", (cost, username_input))
+                            cursor.execute("UPDATE users SET credits = credits - ? WHERE email = ?", (cost, email_input))
                             cursor.execute("UPDATE users SET credits = credits + ? WHERE username = ?", (cost, author))
-                            cursor.execute("UPDATE services SET status = 'en cours', completed_by = ? WHERE id = ?", (username_input, service_id))
+                            cursor.execute("UPDATE services SET status = 'en cours', completed_by = ? WHERE id = ?", (current_username, service_id))
                             conn.commit()
                             conn.close()
                             st.success("Service pris en charge avec succès ! Les crédits ont été transférés.")
@@ -185,7 +209,7 @@ if menu == "🔍 Services dans ma ville":
                 
                 elif status == "en cours":
                     st.info(f"🔄 Ce service est actuellement réalisé par : *{completed_by}*")
-                    if (author == username_input or completed_by == username_input) and st.button("Marquer comme terminé", key=f"finish_{service_id}"):
+                    if (author == current_username or completed_by == current_username) and st.button("Marquer comme terminé", key=f"finish_{service_id}"):
                         conn = get_connection()
                         cursor = conn.cursor()
                         cursor.execute("UPDATE services SET status = 'terminé' WHERE id = ?", (service_id,))
@@ -214,7 +238,7 @@ if menu == "🔍 Services dans ma ville":
                             conn = get_connection()
                             cursor = conn.cursor()
                             cursor.execute("INSERT INTO messages (service_id, sender, content) VALUES (?, ?, ?)", 
-                                           (service_id, username_input, new_msg))
+                                           (service_id, current_username, new_msg))
                             conn.commit()
                             conn.close()
                             st.success("Message envoyé !")
@@ -239,7 +263,7 @@ elif menu == "➕ Proposer un service":
                 cursor.execute("""
                     INSERT INTO services (author, city, category, title, description, cost, status)
                     VALUES (?, ?, ?, ?, ?, ?, 'disponible')
-                """, (username_input, city_input, category, title, description, cost))
+                """, (current_username, city_input, category, title, description, cost))
                 conn.commit()
                 conn.close()
                 st.success("Votre service a été publié avec succès pour votre ville !")
@@ -247,11 +271,11 @@ elif menu == "➕ Proposer un service":
                 st.error("Veuillez remplir tous les champs du formulaire.")
 
 elif menu == "📋 Mes services partagés":
-    st.header(f"📋 Les services proposés par {username_input}")
+    st.header(f"📋 Les services proposés par {current_username}")
     
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, city, category, title, description, cost, status, completed_by FROM services WHERE author = ?", (username_input,))
+    cursor.execute("SELECT id, city, category, title, description, cost, status, completed_by FROM services WHERE author = ?", (current_username,))
     my_services = cursor.fetchall()
     conn.close()
     
