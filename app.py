@@ -170,7 +170,6 @@ st.markdown("""
         color: #2c3e50 !important;
     }
     
-    /* Style pour les sections du bas */
     .dashboard-section {
         background: rgba(255, 255, 255, 0.9);
         padding: 25px;
@@ -190,7 +189,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v10.db"
+DB_NAME = "entraide_v11.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -359,7 +358,6 @@ if menu == "🔍 Services dans ma ville":
             service_id, author, city, category, title, description, cost, status, completed_by = s
             icon = category_icons.get(category, "✨")
             
-            # Vérifier si liké
             conn = get_connection()
             cursor = conn.cursor()
             cursor.execute("SELECT id FROM likes WHERE username = ? AND service_id = ?", (current_username, service_id))
@@ -376,8 +374,7 @@ if menu == "🔍 Services dans ma ville":
                     </div>
                 """, unsafe_allow_html=True)
                 
-                # Bouton Like
-                like_label = "❤️ Liké" if is_liked + 0 else "🤍 Liker ce service"
+                like_label = "❤️ Liké" if is_liked else "🤍 Liker ce service"
                 if st.button(like_label, key=f"like_{service_id}"):
                     conn = get_connection()
                     cursor = conn.cursor()
@@ -506,4 +503,76 @@ elif menu == "📋 Mes services partagés":
 # CASES DU BAS : DISCUSSIONS, LIKES, SERVICES PUBLIÉS
 # ==========================================
 st.markdown("---")
-st.markdo
+st.markdown("<h2 style='text-align: center; color: #1e3c72; font-weight: 900;'>📌 Vos espaces personnels (Discussions, likes & Publications)</h2>", unsafe_allow_html=True)
+
+col_d, col_l, col_p = st.columns(3)
+
+# 1. CASE DISCUSSIONS
+with col_d:
+    st.markdown('<div class="dashboard-section">', unsafe_allow_html=True)
+    st.markdown("### 💬 Vos Discussions")
+    st.write("Les personnes avec qui vous échangez :")
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT DISTINCT m.sender, s.title, m.content 
+        FROM messages m 
+        JOIN services s ON m.service_id = s.id 
+        WHERE m.sender != ? AND (s.author = ? OR s.completed_by = ? OR m.service_id IN (SELECT service_id FROM messages WHERE sender = ?))
+    """, (current_username, current_username, current_username, current_username))
+    discussions = cursor.fetchall()
+    conn.close()
+    
+    if not discussions:
+        st.info("Aucune discussion active pour le moment.")
+    else:
+        for sender, title, content in discussions[:5]:
+            st.markdown(f"💬 *@{sender}* (sur {title}) :<br><small>\"{content}\"</small>", unsafe_allow_html=True)
+            st.divider()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# 2. CASE LIKES
+with col_l:
+    st.markdown('<div class="dashboard-section">', unsafe_allow_html=True)
+    st.markdown("### ❤️️ Likes dans votre ville")
+    st.write(f"Services likés à {city_input} :")
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT s.title, s.author, l.username 
+        FROM likes l 
+        JOIN services s ON l.service_id = s.id 
+        WHERE s.city = ?
+    """, (city_input,))
+    city_likes = cursor.fetchall()
+    conn.close()
+    
+    if not city_likes:
+        st.info("Aucun like enregistré pour l'instant dans votre ville.")
+    else:
+        for title, author, liker in city_likes:
+            st.markdown(f"❤️ *@{liker}* a aimé {title} (de @{author})", unsafe_allow_html=True)
+            st.divider()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# 3. CASE SERVICES PUBLIÉS
+with col_p:
+    st.markdown('<div class="dashboard-section">', unsafe_allow_html=True)
+    st.markdown("### 📋 Vos Services Publiés")
+    st.write("Récapitulatif de vos annonces :")
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT title, category, status, cost FROM services WHERE author = ?", (current_username,))
+    my_pubs = cursor.fetchall()
+    conn.close()
+    
+    if not my_pubs:
+        st.info("Vous n'avez encore publié aucun service.")
+    else:
+        for title, cat, status, cost in my_pubs:
+            st.markdown(f"🔹 *{title}* ({cat})<br>💰 {cost} pts | Statut : {status}", unsafe_allow_html=True)
+            st.divider()
+    st.markdown('</div>', unsafe_allow_html=True)
