@@ -80,7 +80,7 @@ current_user = st.sidebar.text_input("Votre pseudo", value="MonPseudo")
 
 if current_user:
     user_data = get_or_create_user(current_user)
-    st.sidebar.write(text=f"💰 Vos crédits : **{user_data[1]}**")
+    st.sidebar.write(f"💰 Vos crédits : **{user_data[1]}**")
 
 # Menu de navigation
 menu = st.sidebar.selectbox("Navigation", ["Voir les services", "Proposer un service"])
@@ -188,5 +188,7 @@ elif menu == "Proposer un service":
                 conn.commit()
                 conn.close()
                 st.success("Votre service a été publié avec succès !")
+            else:
+                st.error("Veuillez remplir tous les champs et indiquer votre pseudo dans la barre latérale.")
             else:
                 st.error("Veuillez remplir tous les champs et indiquer votre pseudo dans la barre latérale.")
