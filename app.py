@@ -173,7 +173,7 @@ if menu == "🔍 Services dans ma ville":
                         for m in messages:
                             st.text(f"{m[0]} : {m[1]}")
                     else:
-                    st.write("Aucun message pour l'instant. Discutez pour vous organiser !")
+                        st.write("Aucun message pour l'instant. Discutez pour vous organiser !")
                     
                 with st.form(key=f"msg_form_{service_id}"):
                     new_msg = st.text_input("Votre message", key=f"input_msg_{service_id}")
