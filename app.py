@@ -8,59 +8,53 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS COLORÉ ET MODERNE ---
+# --- STYLE CSS CORRIGÉ POUR UN VRAI DESIGN ---
 st.markdown("""
     <style>
-    /* Fond général de l'application avec un joli dégradé doux */
+    /* Fond général de l'application */
     .stApp {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        background-color: #f7f9fc;
     }
     
-    /* En-tête principal coloré avec dégradé vif */
-    .main-header {
-        font-size: 2.8rem;
-        color: #ffffff;
+    /* En-tête principal ultra-stylé et bien visible */
+    .custom-banner {
+        background: linear-gradient(135deg, #FF4B4B 0%, #FF8F00 100%);
+        padding: 35px 20px;
+        border-radius: 15px;
+        color: white;
         text-align: center;
+        box-shadow: 0 6px 20px rgba(255, 75, 75, 0.25);
+        margin-bottom: 25px;
+    }
+    .custom-banner h1 {
+        color: white !important;
+        font-size: 2.5rem;
         font-weight: 800;
-        padding: 30px;
-        background: linear-gradient(135deg, #FF4B4B, #FF8F00);
-        border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(255, 75, 75, 0.3);
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
-    
-    .sub-header {
-        text-align: center;
-        color: #495057;
+    .custom-banner p {
+        color: #fffaf0;
         font-size: 1.2rem;
-        margin-bottom: 35px;
-        font-weight: 600;
+        font-weight: 500;
     }
 
-    /* Boîte de connexion centrale stylisée */
-    .login-container {
+    /* Boîte de connexion centrale */
+    .login-box {
         background-color: #ffffff;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-        max-width: 500px;
-        margin: 50px auto;
-        border-top: 6px solid #FF4B4B;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border-top: 5px solid #FF4B4B;
     }
 
-    /* Cartes de service modernes */
+    /* Cartes de service */
     .service-card {
         background-color: #ffffff;
-        padding: 24px;
-        border-radius: 14px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease;
-    }
-    .service-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -119,98 +113,104 @@ if "temp_email" not in st.session_state:
 
 # --- ÉCRAN DE CONNEXION (SI NON CONNECTÉ) ---
 if not st.session_state.logged_in:
-    st.markdown('<p class="main-header">🤝 Entraide & Services Locaux</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-header">Connectez-vous pour rejoindre votre communauté</p>', unsafe_allow_html=True)
+    st.markdown("""
+        <div class="custom-banner">
+            <h1>🤝 Entraide & Services Locaux</h1>
+            <p>Connectez-vous pour rejoindre votre communauté</p>
+        </div>
+    """, unsafe_allow_html=True)
     
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-    
-    # Étape 1 : Demande de l'e-mail
-    if st.session_state.step == "ask_email":
-        st.subheader("🔐 Étape 1 : Votre E-mail")
-        email_input = st.text_input("Entrez votre adresse e-mail")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown('<div class="login-box">', unsafe_allow_html=True)
         
-        if st.button("Recevoir mon code de validation", type="primary"):
-            if email_input and "@" in email_input:
-                st.session_state.temp_email = email_input
-                st.session_state.step = "ask_code"
-                st.rerun()
-            else:
-                st.error("Veuillez entrer une adresse e-mail valide.")
-                
-    # Étape 2 : Demande du code de validation
-    elif st.session_state.step == "ask_code":
-        st.subheader("📬 Étape 2 : Code de vérification")
-        st.info(f"Un code a été simulé pour : *{st.session_state.temp_email}\n\n🔑 **Votre code de test est : 1234*")
-        
-        code_input = st.text_input("Entrez le code à 4 chiffres", type="password")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Valider le code", type="primary"):
-                if code_input == "1234":
-                    st.session_state.step = "ask_profile"
+        if st.session_state.step == "ask_email":
+            st.subheader("🔐 Étape 1 : Votre E-mail")
+            email_input = st.text_input("Entrez votre adresse e-mail")
+            
+            if st.button("Recevoir mon code", type="primary", use_container_width=True):
+                if email_input and "@" in email_input:
+                    st.session_state.temp_email = email_input
+                    st.session_state.step = "ask_code"
                     st.rerun()
                 else:
-                    st.error("Code incorrect. Essayez 1234.")
-        with col2:
-            if st.button("Retour"):
-                st.session_state.step = "ask_email"
-                st.rerun()
-
-    # Étape 3 : Demande du pseudo et de la ville
-    elif st.session_state.step == "ask_profile":
-        st.subheader("👤 Étape 3 : Votre Profil Voisin")
-        username_input = st.text_input("Votre pseudo")
-        city_input = st.text_input("Votre ville", value="Brive-la-Gaillarde")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Entrer dans l'application", type="primary"):
-                if username_input.strip() and city_input.strip():
-                    conn = get_connection()
-                    cursor = conn.cursor()
-                    cursor.execute("SELECT id, username, city, credits FROM users WHERE email = ?", (st.session_state.temp_email,))
-                    user = cursor.fetchone()
-                    if not user:
-                        cursor.execute("INSERT INTO users (email, username, city, credits) VALUES (?, ?, ?, 10)", 
-                                       (st.session_state.temp_email, username_input, city_input))
-                        conn.commit()
-                    else:
-                        cursor.execute("UPDATE users SET username = ?, city = ? WHERE email = ?", 
-                                       (username_input, city_input, st.session_state.temp_email))
-                        conn.commit()
-                    conn.close()
+                    st.error("Veuillez entrer une adresse e-mail valide.")
                     
-                    st.session_state.logged_in = True
-                    st.session_state.email = st.session_state.temp_email
-                    st.session_state.username = username_input
-                    st.session_state.city = city_input
+        elif st.session_state.step == "ask_code":
+            st.subheader("📬 Étape 2 : Code de vérification")
+            st.info(f"Code de test envoyé à *{st.session_state.temp_email}\n\n🔑 **Code : 1234*")
+            
+            code_input = st.text_input("Entrez le code à 4 chiffres", type="password")
+            
+            c1, c2 = st.columns(2)
+            with c1:
+                if st.button("Valider", type="primary", use_container_width=True):
+                    if code_input == "1234":
+                        st.session_state.step = "ask_profile"
+                        st.rerun()
+                    else:
+                        st.error("Code incorrect (essayez 1234).")
+            with c2:
+                if st.button("Retour", use_container_width=True):
+                    st.session_state.step = "ask_email"
                     st.rerun()
-                else:
-                    st.error("Veuillez remplir tous les champs.")
-        with col2:
-            if st.button("Retour"):
-                st.session_state.step = "ask_code"
-                st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        elif st.session_state.step == "ask_profile":
+            st.subheader("👤 Étape 3 : Votre Profil Voisin")
+            username_input = st.text_input("Votre pseudo")
+            city_input = st.text_input("Votre ville", value="Brive-la-Gaillarde")
+            
+            c1, c2 = st.columns(2)
+            with c1:
+                if st.button("Entrer", type="primary", use_container_width=True):
+                    if username_input.strip() and city_input.strip():
+                        conn = get_connection()
+                        cursor = conn.cursor()
+                        cursor.execute("SELECT id, username, city, credits FROM users WHERE email = ?", (st.session_state.temp_email,))
+                        user = cursor.fetchone()
+                        if not user:
+                            cursor.execute("INSERT INTO users (email, username, city, credits) VALUES (?, ?, ?, 10)", 
+                                           (st.session_state.temp_email, username_input, city_input))
+                            conn.commit()
+                        else:
+                            cursor.execute("UPDATE users SET username = ?, city = ? WHERE email = ?", 
+                                           (username_input, city_input, st.session_state.temp_email))
+                            conn.commit()
+                        conn.close()
+                        
+                        st.session_state.logged_in = True
+                        st.session_state.email = st.session_state.temp_email
+                        st.session_state.username = username_input
+                        st.session_state.city = city_input
+                        st.rerun()
+                    else:
+                        st.error("Remplissez tous les champs.")
+            with c2:
+                if st.button("Retour", use_container_width=True):
+                    st.session_state.step = "ask_code"
+                    st.rerun()
+
+        st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# --- APPLICATION PRINCIPALE (APRÈS CONNEXION RÉUSSIE) ---
+# --- APPLICATION PRINCIPALE ---
 email_input = st.session_state.email
 current_username = st.session_state.username
 city_input = st.session_state.city
 
-# Récupérer les crédits actualisés
 conn = get_connection()
 cursor = conn.cursor()
 cursor.execute("SELECT credits FROM users WHERE email = ?", (email_input,))
 user_credits = cursor.fetchone()[0]
 conn.close()
 
-# En-tête application
-st.markdown('<p class="main-header">🤝 Entraide & Services Locaux</p>', unsafe_allow_html=True)
-st.markdown(f'<p class="sub-header">Bienvenue sur votre réseau solidaire à {city_input} !</p>', unsafe_allow_html=True)
+# Bannière colorée en haut de l'application principale
+st.markdown(f"""
+    <div class="custom-banner">
+        <h1>🤝 Entraide & Services Locaux</h1>
+        <p>Bienvenue sur votre réseau solidaire à {city_input} !</p>
+    </div>
+""", unsafe_allow_html=True)
 
 # Barre latérale
 st.sidebar.header("👤 Mon Profil Voisin")
@@ -227,7 +227,6 @@ if st.sidebar.button("Se déconnecter"):
 st.sidebar.markdown("---")
 menu = st.sidebar.selectbox("Navigation", ["🔍 Services dans ma ville", "➕ Proposer un service", "📋 Mes services partagés"])
 
-# Dictionnaire des émojis par catégorie
 category_icons = {
     "🛠️ Bricolage & Réparation": "🛠️",
     "🌱 Jardinage & Extérieur": "🌱",
@@ -278,14 +277,14 @@ if menu == "🔍 Services dans ma ville":
                             cursor.execute("UPDATE services SET status = 'en cours', completed_by = ? WHERE id = ?", (current_username, service_id))
                             conn.commit()
                             conn.close()
-                            st.success("Service pris en charge avec succès ! Les crédits ont été transférés.")
+                            st.success("Service pris en charge avec succès !")
                             st.rerun()
                         else:
                             conn.close()
-                            st.error("Vous n'avez pas assez de crédits pour prendre ce service.")
+                            st.error("Vous n'avez pas assez de crédits.")
                 
                 elif status == "en cours":
-                    st.info(f"🔄 Ce service est actuellement réalisé par : *{completed_by}*")
+                    st.info(f"🔄 Réalisé par : *{completed_by}*")
                     if (author == current_username or completed_by == current_username) and st.button("Marquer comme terminé", key=f"finish_{service_id}"):
                         conn = get_connection()
                         cursor = conn.cursor()
@@ -306,7 +305,7 @@ if menu == "🔍 Services dans ma ville":
                         for m in messages:
                             st.text(f"{m[0]} : {m[1]}")
                     else:
-                        st.write("Aucun message pour l'instant. Discutez pour vous organiser !")
+                        st.write("Aucun message pour l'instant.")
                         
                     with st.form(key=f"msg_form_{service_id}"):
                         new_msg = st.text_input("Votre message", key=f"input_msg_{service_id}")
@@ -318,7 +317,6 @@ if menu == "🔍 Services dans ma ville":
                                            (service_id, current_username, new_msg))
                             conn.commit()
                             conn.close()
-                            st.success("Message envoyé !")
                             st.rerun()
                 st.divider()
 
@@ -343,9 +341,9 @@ elif menu == "➕ Proposer un service":
                 """, (current_username, city_input, category, title, description, cost))
                 conn.commit()
                 conn.close()
-                st.success("Votre service a été publié avec succès pour votre ville !")
+                st.success("Votre service a été publié avec succès !")
             else:
-                st.error("Veuillez remplir tous les champs du formulaire.")
+                st.error("Veuillez remplir tous les champs.")
 
 elif menu == "📋 Mes services partagés":
     st.header(f"📋 Les services proposés par {current_username}")
@@ -374,7 +372,7 @@ elif menu == "📋 Mes services partagés":
                 """, unsafe_allow_html=True)
                 
                 if status == "en cours":
-                    st.info(f"Pris en charge par votre voisin : *{completed_by}*")
+                    st.info(f"Pris en charge par : *{completed_by}*")
                 elif status == "terminé":
-                    st.success("Ce service a été réalisé avec succès !")
+                    st.success("Réalisé avec succès !")
                 st.divider()
