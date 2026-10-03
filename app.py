@@ -8,66 +8,83 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS ULTRA-COLORÉ ET DÉCORÉ ---
+# --- STYLE CSS AVEC MOTIFS ET DÉCORATIONS VISUELLES ---
 st.markdown("""
     <style>
-    /* Fond global de l'application avec un dégradé coloré */
+    /* Fond global avec un motif géométrique subtil et dégradé chaleureux */
     .stApp {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        background-image: radial-gradient(#ff8008 0.75px, transparent 0.75px), radial-gradient(#ff8008 0.75px, #ffecd2 0.75px);
+        background-size: 30px 30px;
+        background-position: 0 0, 15px 15px;
     }
     
-    /* Bannière principale très colorée */
+    /* Bannière principale ultra-décorée avec bordure lumineuse */
     .custom-banner {
-        background: linear-gradient(135deg, #ff4b4b 0%, #ff9000 50%, #ffb300 100%);
-        padding: 40px 20px;
-        border-radius: 20px;
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        padding: 45px 25px;
+        border-radius: 25px;
         color: white;
         text-align: center;
-        box-shadow: 0 10px 25px rgba(255, 75, 75, 0.3);
+        box-shadow: 0 15px 35px rgba(255, 65, 108, 0.4);
         margin-bottom: 30px;
-        border: 2px solid rgba(255, 255, 255, 0.4);
+        border: 3px solid rgba(255, 255, 255, 0.6);
+        position: relative;
+        overflow: hidden;
+    }
+    .custom-banner::before {
+        content: "⭐ 🤝 🌟 💡 🛠️";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        font-size: 5rem;
+        opacity: 0.15;
     }
     .custom-banner h1 {
         color: white !important;
-        font-size: 2.8rem;
+        font-size: 3rem;
         font-weight: 900;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        text-shadow: 2px 3px 6px rgba(0,0,0,0.3);
+        margin-bottom: 10px;
     }
     .custom-banner p {
         color: #fffaf0;
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         font-weight: 600;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
     }
 
-    /* Boîte de connexion stylisée */
+    /* Boîte de connexion avec effet de profondeur */
     .login-box {
-        background: white;
-        padding: 35px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        border-top: 8px solid #ff4b4b;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        border-top: 10px solid #ff416c;
+        backdrop-filter: blur(10px);
     }
 
-    /* Cartes de service avec bordure colorée */
+    /* Cartes de service stylisées avec motif latéral */
     .service-card {
         background-color: #ffffff;
-        padding: 24px;
-        border-radius: 16px;
-        margin-bottom: 20px;
-        border: 1px solid #e2e8f0;
-        border-left: 6px solid #4f8bf9;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
-        transition: transform 0.2s ease;
+        padding: 26px;
+        border-radius: 18px;
+        margin-bottom: 22px;
+        border: 1px solid #ffdde1;
+        border-left: 8px solid #ff416c;
+        box-shadow: 0 8px 20px rgba(255, 65, 108, 0.1);
+        transition: all 0.3s ease;
     }
     .service-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(255, 65, 108, 0.2);
+        border-left-width: 12px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v3.db"
+DB_NAME = "entraide_v4.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -119,7 +136,7 @@ if not st.session_state.logged_in:
     st.markdown("""
         <div class="custom-banner">
             <h1>🤝 Entraide & Services Locaux</h1>
-            <p>🌟 Le réseau de solidarité coloré entre voisins à Brive ! 🌟</p>
+            <p>🌟 Le réseau de solidarité coloré et chaleureux entre voisins à Brive ! 🌟</p>
         </div>
     """, unsafe_allow_html=True)
     
