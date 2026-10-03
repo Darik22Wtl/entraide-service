@@ -14,6 +14,7 @@ DB_NAME = "entraide.db"
 def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
+    
     # Table des utilisateurs
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -22,6 +23,7 @@ def init_db():
             credits INTEGER DEFAULT 10
         )
     """)
+    
     # Table des services
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS services (
@@ -34,7 +36,12 @@ def init_db():
             completed_by TEXT
         )
     """)
+    
     conn.commit()
     conn.close()
 
-# Exécut
+# --- LANCEMENT ---
+init_db()
+
+st.title("🤝 Entraide & Services Locaux")
+st.write("Bienvenue sur la plateforme !")
