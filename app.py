@@ -8,42 +8,55 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS AVEC MOTIFS THÉMATIQUES POUR LA BARRE LATÉRALE ET LE FOND ---
+# --- STYLE CSS AVEC MOTIFS PARTOUT ET CORRECTION D'AFFICHAGE ---
 st.markdown("""
     <style>
-    /* Fond global avec un motif géométrique chaleureux */
+    /* Fond global avec des motifs géométriques et des symboles de services en arrière-plan */
     .stApp {
         background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        background-image: radial-gradient(#ff8008 0.75px, transparent 0.75px), radial-gradient(#ff8008 0.75px, #ffecd2 0.75px);
-        background-size: 30px 30px;
-        background-position: 0 0, 15px 15px;
-    }
-    
-    /* Personnalisation complète de la barre latérale (sidebar) avec des motifs d'icônes de services */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #2c3e50 0%, #4ca1af 100%) !important;
         background-image: 
-            radial-gradient(white 15%, transparent 16%),
-            radial-gradient(white 15%, transparent 16%);
-        background-size: 60px 60px;
-        background-position: 0 0, 30px 30px;
-        background-repeat: repeat;
-        /* Ajout d'éléments visuels et d'icônes de services en arrière-plan discret via pseudo-élément */
-        position: relative;
+            radial-gradient(#ff8008 1px, transparent 1px), 
+            radial-gradient(#ff416c 1px, #ffecd2 1px);
+        background-size: 40px 40px;
+        background-position: 0 0, 20px 20px;
     }
     
-    /* On rend le texte et les éléments de la sidebar bien visibles sur le fond sombre/coloré */
-    [data-testid="stSidebar"] * {
+    /* Barre latérale (sidebar) riche en motifs thématiques */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%) !important;
+        background-image: 
+            radial-gradient(rgba(255, 255, 255, 0.15) 20%, transparent 21%),
+            radial-gradient(rgba(255, 255, 255, 0.1) 20%, transparent 21%);
+        background-size: 50px 50px;
+        background-position: 0 0, 25px 25px;
+    }
+    
+    /* Texte général dans la sidebar en blanc */
+    [data-testid="stSidebar"] *:not(.stMetric *) {
         color: #ffffff !important;
     }
-    
-    /* Style spécifique pour les widgets interactifs dans la sidebar (select, inputs si besoin) */
+
+    /* CORRECTION : Style spécifique pour le bloc métrique de la sidebar pour qu'il reste lisible sur fond blanc */
+    [data-testid="stSidebar"] [data-testid="stMetric"] {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    [data-testid="stSidebar"] [data-testid="stMetric"] label, 
+    [data-testid="stSidebar"] [data-testid="stMetric"] div, 
+    [data-testid="stSidebar"] [data-testid="stMetric"] [data-testid="stMetricValue"] {
+        color: #1e3c72 !important;
+        font-weight: bold !important;
+    }
+
+    /* Style des selectbox dans la sidebar */
     [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 8px;
     }
 
-    /* Bannière principale ultra-décorée */
+    /* Bannière principale ultra-décorée avec des motifs d'icônes */
     .custom-banner {
         background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         padding: 45px 25px;
@@ -57,13 +70,13 @@ st.markdown("""
         overflow: hidden;
     }
     .custom-banner::before {
-        content: "🌳 🛠️ 📚 🍳 🚗 💻 🐾";
+        content: "🌳 🛠️ 📚 🍳 🚗 💻 🐾 🏡 🌱";
         position: absolute;
-        top: -10px;
+        top: -5px;
         right: -10px;
-        font-size: 4rem;
-        opacity: 0.2;
-        letter-spacing: 10px;
+        font-size: 3.5rem;
+        opacity: 0.22;
+        letter-spacing: 8px;
     }
     .custom-banner h1 {
         color: white !important;
@@ -115,7 +128,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v5.db"
+DB_NAME = "entraide_v6.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -237,7 +250,7 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Barre latérale (Sidebar) décorée avec des icônes thématiques (arbres, jardinage, etc.)
+# Barre latérale (Sidebar) décorée avec des icônes thématiques
 st.sidebar.markdown("### 🌳 🏡 Mon Profil Voisin")
 st.sidebar.success(f"Connecté : *{current_username}*")
 st.sidebar.write(f"📧 E-mail : {email_input}")
