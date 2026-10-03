@@ -8,55 +8,61 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS AVEC MOTIFS PARTOUT ET CORRECTION D'AFFICHAGE ---
+# --- STYLE CSS AVEC MOTIFS PARTOUT ET TEXTES FONCÉS ---
 st.markdown("""
     <style>
-    /* Fond global avec des motifs géométriques et des symboles de services en arrière-plan */
+    /* Fond global rempli de motifs thématiques et d'émojis de services */
     .stApp {
         background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
         background-image: 
-            radial-gradient(#ff8008 1px, transparent 1px), 
-            radial-gradient(#ff416c 1px, #ffecd2 1px);
+            radial-gradient(#ff416c 1.5px, transparent 1.5px), 
+            radial-gradient(#ff8008 1.5px, #ffecd2 1.5px);
+        background-size: 30px 30px;
+        background-position: 0 0, 15px 15px;
+    }
+    
+    /* Barre latérale (sidebar) riche en motifs d'arbres, de jardinage et d'outils */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%) !important;
+        background-image: 
+            radial-gradient(rgba(255, 255, 255, 0.2) 25%, transparent 26%),
+            radial-gradient(rgba(255, 255, 255, 0.15) 25%, transparent 26%);
         background-size: 40px 40px;
         background-position: 0 0, 20px 20px;
     }
     
-    /* Barre latérale (sidebar) riche en motifs thématiques */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%) !important;
-        background-image: 
-            radial-gradient(rgba(255, 255, 255, 0.15) 20%, transparent 21%),
-            radial-gradient(rgba(255, 255, 255, 0.1) 20%, transparent 21%);
-        background-size: 50px 50px;
-        background-position: 0 0, 25px 25px;
-    }
-    
-    /* Texte général dans la sidebar en blanc */
-    [data-testid="stSidebar"] *:not(.stMetric *) {
+    /* Texte général dans la sidebar en blanc pour qu'il ressorte bien */
+    [data-testid="stSidebar"] *:not(.stMetric *):not(input):not(select) {
         color: #ffffff !important;
     }
 
-    /* CORRECTION : Style spécifique pour le bloc métrique de la sidebar pour qu'il reste lisible sur fond blanc */
+    /* CORRECTION TOTALE DES BLANCS DANS LA SIDEBAR (Métrique et inputs) */
     [data-testid="stSidebar"] [data-testid="stMetric"] {
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: #ffffff !important;
         padding: 15px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        border-radius: 14px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        border-left: 6px solid #ff416c;
     }
+    /* Forcer l'écriture en foncé bien lisible à l'intérieur de la métrique */
     [data-testid="stSidebar"] [data-testid="stMetric"] label, 
     [data-testid="stSidebar"] [data-testid="stMetric"] div, 
-    [data-testid="stSidebar"] [data-testid="stMetric"] [data-testid="stMetricValue"] {
+    [data-testid="stSidebar"] [data-testid="stMetric"] [data-testid="stMetricValue"],
+    [data-testid="stSidebar"] [data-testid="stMetric"] span {
         color: #1e3c72 !important;
-        font-weight: bold !important;
+        font-weight: 800 !important;
     }
 
-    /* Style des selectbox dans la sidebar */
+    /* Style des selectbox et widgets dans la sidebar */
     [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: rgba(255, 255, 255, 0.95);
         border-radius: 8px;
     }
+    [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] * {
+        color: #1e3c72 !important;
+    }
 
-    /* Bannière principale ultra-décorée avec des motifs d'icônes */
+    /* Bannière principale ultra-décorée avec plein de motifs de services */
     .custom-banner {
         background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         padding: 45px 25px;
@@ -70,13 +76,13 @@ st.markdown("""
         overflow: hidden;
     }
     .custom-banner::before {
-        content: "🌳 🛠️ 📚 🍳 🚗 💻 🐾 🏡 🌱";
+        content: "🌳 🌲 🌱 🛠️ 📚 🍳 🚗 💻 🐾 🏡 🌻 🔧";
         position: absolute;
-        top: -5px;
+        top: -8px;
         right: -10px;
-        font-size: 3.5rem;
-        opacity: 0.22;
-        letter-spacing: 8px;
+        font-size: 3rem;
+        opacity: 0.25;
+        letter-spacing: 6px;
     }
     .custom-banner h1 {
         color: white !important;
@@ -128,7 +134,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v6.db"
+DB_NAME = "entraide_v7.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -250,8 +256,8 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Barre latérale (Sidebar) décorée avec des icônes thématiques
-st.sidebar.markdown("### 🌳 🏡 Mon Profil Voisin")
+# Barre latérale (Sidebar) riche en motifs d'arbres, de jardinage et de services
+st.sidebar.markdown("### 🌳 🌻 Mon Profil Voisin")
 st.sidebar.success(f"Connecté : *{current_username}*")
 st.sidebar.write(f"📧 E-mail : {email_input}")
 st.sidebar.write(f"📍 Ville : *{city_input}*")
@@ -262,7 +268,7 @@ if st.sidebar.button("Se déconnecter"):
     st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### 🛠️ 🌱 Services & Actions")
+st.sidebar.markdown("### 🛠️ 🌲 Services & Actions")
 menu = st.sidebar.selectbox("Navigation", ["🔍 Services dans ma ville", "➕ Proposer un service", "📋 Mes services partagés"])
 
 category_icons = {
