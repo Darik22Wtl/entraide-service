@@ -67,7 +67,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_direct.db"
+DB_NAME = "entraide_v3.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -168,10 +168,17 @@ email_input = st.session_state.email
 current_username = st.session_state.username
 city_input = st.session_state.city
 
+# Récupération sécurisée des crédits
 conn = get_connection()
 cursor = conn.cursor()
 cursor.execute("SELECT credits FROM users WHERE email = ?", (email_input,))
-user_credits = cursor.fetchone()[0]
+row = cursor.fetchone()
+if row:
+    user_credits = row[0]
+else:
+    cursor.execute("INSERT INTO users (email, username, city, credits) VALUES (?, ?, ?, 10)", (email_input, current_username, city_input))
+    conn.commit()
+    user_credits = 10
 conn.close()
 
 # Bannière colorée dans l'application
