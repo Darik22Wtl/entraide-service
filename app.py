@@ -8,61 +8,76 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS AVEC MOTIFS PARTOUT ET TEXTES FONCÉS ---
+# --- STYLE CSS AVEC VRAIS MOTIFS VISIBLES ET CORRECTIONS ---
 st.markdown("""
     <style>
-    /* Fond global rempli de motifs thématiques et d'émojis de services */
+    /* Fond global avec un motif à carreaux/géométrique très visible partout */
     .stApp {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        background-color: #ffecd2;
         background-image: 
-            radial-gradient(#ff416c 1.5px, transparent 1.5px), 
-            radial-gradient(#ff8008 1.5px, #ffecd2 1.5px);
+            linear-gradient(45deg, rgba(255, 65, 108, 0.15) 25%, transparent 25%), 
+            linear-gradient(-45deg, rgba(255, 65, 108, 0.15) 25%, transparent 25%), 
+            linear-gradient(45deg, transparent 75%, rgba(255, 65, 108, 0.15) 75%), 
+            linear-gradient(-45deg, transparent 75%, rgba(255, 65, 108, 0.15) 75%);
+        background-size: 40px 40px;
+        background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+    }
+    
+    /* Barre latérale (sidebar) avec des motifs géométriques bien marqués */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%) !important;
+        background-image: 
+            radial-gradient(rgba(255, 255, 255, 0.3) 30%, transparent 31%),
+            radial-gradient(rgba(255, 255, 255, 0.2) 30%, transparent 31%);
         background-size: 30px 30px;
         background-position: 0 0, 15px 15px;
     }
     
-    /* Barre latérale (sidebar) riche en motifs d'arbres, de jardinage et d'outils */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%) !important;
-        background-image: 
-            radial-gradient(rgba(255, 255, 255, 0.2) 25%, transparent 26%),
-            radial-gradient(rgba(255, 255, 255, 0.15) 25%, transparent 26%);
-        background-size: 40px 40px;
-        background-position: 0 0, 20px 20px;
-    }
-    
-    /* Texte général dans la sidebar en blanc pour qu'il ressorte bien */
-    [data-testid="stSidebar"] *:not(.stMetric *):not(input):not(select) {
+    /* Texte général dans la sidebar en blanc */
+    [data-testid="stSidebar"] *:not(.stMetric *):not(.stButton button):not(input):not(select) {
         color: #ffffff !important;
     }
 
-    /* CORRECTION TOTALE DES BLANCS DANS LA SIDEBAR (Métrique et inputs) */
+    /* Style du bloc métrique pour qu'il soit parfaitement lisible */
     [data-testid="stSidebar"] [data-testid="stMetric"] {
         background-color: #ffffff !important;
-        padding: 15px;
-        border-radius: 14px;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        padding: 12px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         border-left: 6px solid #ff416c;
     }
-    /* Forcer l'écriture en foncé bien lisible à l'intérieur de la métrique */
     [data-testid="stSidebar"] [data-testid="stMetric"] label, 
     [data-testid="stSidebar"] [data-testid="stMetric"] div, 
-    [data-testid="stSidebar"] [data-testid="stMetric"] [data-testid="stMetricValue"],
-    [data-testid="stSidebar"] [data-testid="stMetric"] span {
+    [data-testid="stSidebar"] [data-testid="stMetric"] [data-testid="stMetricValue"] {
         color: #1e3c72 !important;
         font-weight: 800 !important;
     }
 
-    /* Style des selectbox et widgets dans la sidebar */
+    /* CORRECTION DU BOUTON DE DÉCONNEXION (et des boutons de la sidebar) */
+    [data-testid="stSidebar"] .stButton button {
+        background-color: #ff416c !important;
+        color: #ffffff !important;
+        font-weight: bold !important;
+        border-radius: 8px !important;
+        border: 2px solid #ffffff !important;
+        width: 100%;
+    }
+    [data-testid="stSidebar"] .stButton button:hover {
+        background-color: #ff4b2b !important;
+        border-color: #ffecd2 !important;
+    }
+
+    /* Style des selectbox dans la sidebar */
     [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
         background-color: rgba(255, 255, 255, 0.95);
         border-radius: 8px;
     }
     [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] * {
         color: #1e3c72 !important;
+        font-weight: 600;
     }
 
-    /* Bannière principale ultra-décorée avec plein de motifs de services */
+    /* Bannière principale ultra-décorée */
     .custom-banner {
         background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         padding: 45px 25px;
@@ -98,7 +113,7 @@ st.markdown("""
         text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
     }
 
-    /* Boîte de connexion avec effet de profondeur */
+    /* Boîte de connexion */
     .login-box {
         background: rgba(255, 255, 255, 0.95);
         padding: 40px;
@@ -111,7 +126,7 @@ st.markdown("""
         color: #333333 !important;
     }
 
-    /* Cartes de service stylisées avec motif latéral */
+    /* Cartes de service stylisées */
     .service-card {
         background-color: #ffffff;
         padding: 26px;
@@ -134,7 +149,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v7.db"
+DB_NAME = "entraide_v8.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -256,14 +271,14 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Barre latérale (Sidebar) riche en motifs d'arbres, de jardinage et de services
+# Barre latérale (Sidebar) décorée
 st.sidebar.markdown("### 🌳 🌻 Mon Profil Voisin")
 st.sidebar.success(f"Connecté : *{current_username}*")
 st.sidebar.write(f"📧 E-mail : {email_input}")
 st.sidebar.write(f"📍 Ville : *{city_input}*")
 st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_credits} pts")
 
-if st.sidebar.button("Se déconnecter"):
+if st.sidebar.button("🚪 Se déconnecter"):
     st.session_state.logged_in = False
     st.rerun()
 
