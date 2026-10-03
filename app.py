@@ -68,18 +68,15 @@ st.markdown("""
         overflow: hidden;
     }
 
-    /* S'assurer que le contenu de la sidebar reste bien au-dessus du filigrane */
     [data-testid="stSidebar"] > div:first-child {
         position: relative;
         z-index: 1;
     }
     
-    /* Texte général dans la sidebar en blanc */
     [data-testid="stSidebar"] *:not(.stMetric *):not(.stButton button):not(input):not(select) {
         color: #ffffff !important;
     }
 
-    /* Style du bloc métrique pour qu'il soit parfaitement lisible */
     [data-testid="stSidebar"] [data-testid="stMetric"] {
         background-color: #ffffff !important;
         padding: 12px;
@@ -94,7 +91,6 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* Style du bouton de déconnexion et des boutons de la sidebar */
     [data-testid="stSidebar"] .stButton button {
         background-color: #ff416c !important;
         color: #ffffff !important;
@@ -108,7 +104,6 @@ st.markdown("""
         border-color: #ffecd2 !important;
     }
 
-    /* Style des selectbox dans la sidebar */
     [data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
         background-color: rgba(255, 255, 255, 0.95);
         border-radius: 8px;
@@ -118,7 +113,6 @@ st.markdown("""
         font-weight: 600;
     }
 
-    /* Bannière principale ultra-décorée */
     .custom-banner {
         background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         padding: 45px 25px;
@@ -131,15 +125,6 @@ st.markdown("""
         position: relative;
         overflow: hidden;
         z-index: 1;
-    }
-    .custom-banner::before {
-        content: "🌳 🌲 🌱 🛠️ 📚 🍳 🚗 💻 🐾 🏡 🌻 🔧";
-        position: absolute;
-        top: -8px;
-        right: -10px;
-        font-size: 3rem;
-        opacity: 0.25;
-        letter-spacing: 6px;
     }
     .custom-banner h1 {
         color: white !important;
@@ -155,7 +140,6 @@ st.markdown("""
         text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
     }
 
-    /* Boîte de connexion */
     .login-box {
         background: rgba(255, 255, 255, 0.95);
         padding: 40px;
@@ -170,7 +154,6 @@ st.markdown("""
         color: #333333 !important;
     }
 
-    /* Cartes de service stylisées */
     .service-card {
         background-color: #ffffff;
         padding: 26px;
@@ -186,16 +169,28 @@ st.markdown("""
     .service-card * {
         color: #2c3e50 !important;
     }
-    .service-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(255, 65, 108, 0.2);
-        border-left-width: 12px;
+    
+    /* Style pour les sections du bas */
+    .dashboard-section {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 25px;
+        border-radius: 20px;
+        border: 2px solid #ff416c;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        margin-top: 30px;
+        margin-bottom: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    .dashboard-section h3 {
+        color: #ff416c !important;
+        font-weight: 800;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_v9.db"
+DB_NAME = "entraide_v10.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -223,6 +218,14 @@ def init_db():
         )
     """)
     cursor.execute("""
+        CREATE TABLE IF NOT EXISTS likes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            service_id INTEGER NOT NULL,
+            UNIQUE(username, service_id)
+        )
+    """)
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             service_id INTEGER NOT NULL,
@@ -242,7 +245,7 @@ def get_connection():
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
-# --- ÉCRAN DE CONNEXION DIRECTE PAR E-MAIL ---
+# --- ÉCRAN DE CONNEXION ---
 if not st.session_state.logged_in:
     st.markdown("""
         <div class="custom-banner">
@@ -255,7 +258,7 @@ if not st.session_state.logged_in:
     with col2:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
         st.subheader("🔐 Connexion Voisin")
-        st.write("Entrez vos informations pour accéder directement à l'application et enregistrer votre e-mail.")
+        st.write("Entrez vos informations pour accéder directement à l'application.")
         
         with st.form("login_form"):
             email_input = st.text_input("Votre adresse e-mail")
@@ -291,12 +294,11 @@ if not st.session_state.logged_in:
         st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# --- APPLICATION PRINCIPALE (APRÈS CONNEXION) ---
+# --- APPLICATION PRINCIPALE ---
 email_input = st.session_state.email
 current_username = st.session_state.username
 city_input = st.session_state.city
 
-# Récupération sécurisée des crédits
 conn = get_connection()
 cursor = conn.cursor()
 cursor.execute("SELECT credits FROM users WHERE email = ?", (email_input,))
@@ -309,7 +311,6 @@ else:
     user_credits = 10
 conn.close()
 
-# Bannière colorée dans l'application
 st.markdown(f"""
     <div class="custom-banner">
         <h1>🤝 Entraide & Services Locaux</h1>
@@ -317,7 +318,6 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# Barre latérale (Sidebar) riche en motifs et émojis
 st.sidebar.markdown("### 🌳 🌻 Mon Profil Voisin")
 st.sidebar.success(f"Connecté : *{current_username}*")
 st.sidebar.write(f"📧 E-mail : {email_input}")
@@ -359,16 +359,36 @@ if menu == "🔍 Services dans ma ville":
             service_id, author, city, category, title, description, cost, status, completed_by = s
             icon = category_icons.get(category, "✨")
             
+            # Vérifier si liké
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM likes WHERE username = ? AND service_id = ?", (current_username, service_id))
+            is_liked = cursor.fetchone() is not None
+            conn.close()
+            
             with st.container():
                 st.markdown(f"""
                     <div class="service-card">
                         <h3>{icon} {title}</h3>
-                        <p><b>Catégorie :</b> {category} | <b>Proposé par :</b> {author} ({city})</p>
+                        <p><b>Catégorie :</b> {category} | <b>Proposé par :</b> @{author} ({city})</p>
                         <p><b>Coût :</b> {cost} crédits | <b>Statut :</b> <code>{status}</code></p>
                         <p><i>{description}</i></p>
                     </div>
                 """, unsafe_allow_html=True)
                 
+                # Bouton Like
+                like_label = "❤️ Liké" if is_liked + 0 else "🤍 Liker ce service"
+                if st.button(like_label, key=f"like_{service_id}"):
+                    conn = get_connection()
+                    cursor = conn.cursor()
+                    if is_liked:
+                        cursor.execute("DELETE FROM likes WHERE username = ? AND service_id = ?", (current_username, service_id))
+                    else:
+                        cursor.execute("INSERT INTO likes (username, service_id) VALUES (?, ?)", (current_username, service_id))
+                    conn.commit()
+                    conn.close()
+                    st.rerun()
+
                 if status == "disponible" and author != current_username:
                     if st.button(f"Prendre ce service ({cost} crédits)", key=f"take_{service_id}"):
                         conn = get_connection()
@@ -408,7 +428,7 @@ if menu == "🔍 Services dans ma ville":
                     
                     if messages:
                         for m in messages:
-                            st.text(f"{m[0]} : {m[1]}")
+                            st.text(f"@{m[0]} : {m[1]}")
                     else:
                         st.write("Aucun message pour l'instant.")
                         
@@ -481,3 +501,9 @@ elif menu == "📋 Mes services partagés":
                 elif status == "terminé":
                     st.success("Réalisé avec succès !")
                 st.divider()
+
+# ==========================================
+# CASES DU BAS : DISCUSSIONS, LIKES, SERVICES PUBLIÉS
+# ==========================================
+st.markdown("---")
+st.markdo
