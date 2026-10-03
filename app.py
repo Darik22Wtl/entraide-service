@@ -8,59 +8,66 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- STYLE CSS CORRIGÉ POUR UN VRAI DESIGN ---
+# --- STYLE CSS ULTRA-COLORÉ ET DÉCORÉ ---
 st.markdown("""
     <style>
-    /* Fond général de l'application */
+    /* Fond global de l'application avec un dégradé coloré */
     .stApp {
-        background-color: #f7f9fc;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     }
     
-    /* En-tête principal ultra-stylé et bien visible */
+    /* Bannière principale très colorée */
     .custom-banner {
-        background: linear-gradient(135deg, #FF4B4B 0%, #FF8F00 100%);
-        padding: 35px 20px;
-        border-radius: 15px;
+        background: linear-gradient(135deg, #ff4b4b 0%, #ff9000 50%, #ffb300 100%);
+        padding: 40px 20px;
+        border-radius: 20px;
         color: white;
         text-align: center;
-        box-shadow: 0 6px 20px rgba(255, 75, 75, 0.25);
-        margin-bottom: 25px;
+        box-shadow: 0 10px 25px rgba(255, 75, 75, 0.3);
+        margin-bottom: 30px;
+        border: 2px solid rgba(255, 255, 255, 0.4);
     }
     .custom-banner h1 {
         color: white !important;
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 5px;
+        font-size: 2.8rem;
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
     .custom-banner p {
         color: #fffaf0;
-        font-size: 1.2rem;
-        font-weight: 500;
+        font-size: 1.3rem;
+        font-weight: 600;
     }
 
-    /* Boîte de connexion centrale */
+    /* Boîte de connexion stylisée */
     .login-box {
-        background-color: #ffffff;
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        border-top: 5px solid #FF4B4B;
+        background: white;
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-top: 8px solid #ff4b4b;
     }
 
-    /* Cartes de service */
+    /* Cartes de service avec bordure colorée */
     .service-card {
         background-color: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 15px;
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 20px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+        border-left: 6px solid #4f8bf9;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
     </style>
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide_final.db"
+DB_NAME = "entraide_direct.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
@@ -106,94 +113,57 @@ def get_connection():
 # --- GESTION DE LA SESSION DE CONNEXION ---
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
-if "step" not in st.session_state:
-    st.session_state.step = "ask_email"
-if "temp_email" not in st.session_state:
-    st.session_state.temp_email = ""
 
-# --- ÉCRAN DE CONNEXION (SI NON CONNECTÉ) ---
+# --- ÉCRAN DE CONNEXION DIRECTE PAR E-MAIL ---
 if not st.session_state.logged_in:
     st.markdown("""
         <div class="custom-banner">
             <h1>🤝 Entraide & Services Locaux</h1>
-            <p>Connectez-vous pour rejoindre votre communauté</p>
+            <p>🌟 Le réseau de solidarité coloré entre voisins à Brive ! 🌟</p>
         </div>
     """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        st.subheader("🔐 Connexion Voisin")
+        st.write("Entrez vos informations pour accéder directement à l'application et enregistrer votre e-mail.")
         
-        if st.session_state.step == "ask_email":
-            st.subheader("🔐 Étape 1 : Votre E-mail")
-            email_input = st.text_input("Entrez votre adresse e-mail")
-            
-            if st.button("Recevoir mon code", type="primary", use_container_width=True):
-                if email_input and "@" in email_input:
-                    st.session_state.temp_email = email_input
-                    st.session_state.step = "ask_code"
-                    st.rerun()
-                else:
-                    st.error("Veuillez entrer une adresse e-mail valide.")
-                    
-        elif st.session_state.step == "ask_code":
-            st.subheader("📬 Étape 2 : Code de vérification")
-            st.info(f"Code de test envoyé à *{st.session_state.temp_email}\n\n🔑 **Code : 1234*")
-            
-            code_input = st.text_input("Entrez le code à 4 chiffres", type="password")
-            
-            c1, c2 = st.columns(2)
-            with c1:
-                if st.button("Valider", type="primary", use_container_width=True):
-                    if code_input == "1234":
-                        st.session_state.step = "ask_profile"
-                        st.rerun()
-                    else:
-                        st.error("Code incorrect (essayez 1234).")
-            with c2:
-                if st.button("Retour", use_container_width=True):
-                    st.session_state.step = "ask_email"
-                    st.rerun()
-
-        elif st.session_state.step == "ask_profile":
-            st.subheader("👤 Étape 3 : Votre Profil Voisin")
+        with st.form("login_form"):
+            email_input = st.text_input("Votre adresse e-mail")
             username_input = st.text_input("Votre pseudo")
             city_input = st.text_input("Votre ville", value="Brive-la-Gaillarde")
             
-            c1, c2 = st.columns(2)
-            with c1:
-                if st.button("Entrer", type="primary", use_container_width=True):
-                    if username_input.strip() and city_input.strip():
-                        conn = get_connection()
-                        cursor = conn.cursor()
-                        cursor.execute("SELECT id, username, city, credits FROM users WHERE email = ?", (st.session_state.temp_email,))
-                        user = cursor.fetchone()
-                        if not user:
-                            cursor.execute("INSERT INTO users (email, username, city, credits) VALUES (?, ?, ?, 10)", 
-                                           (st.session_state.temp_email, username_input, city_input))
-                            conn.commit()
-                        else:
-                            cursor.execute("UPDATE users SET username = ?, city = ? WHERE email = ?", 
-                                           (username_input, city_input, st.session_state.temp_email))
-                            conn.commit()
-                        conn.close()
-                        
-                        st.session_state.logged_in = True
-                        st.session_state.email = st.session_state.temp_email
-                        st.session_state.username = username_input
-                        st.session_state.city = city_input
-                        st.rerun()
+            submit_btn = st.form_submit_button("Entrer dans l'application", type="primary", use_container_width=True)
+            
+            if submit_btn:
+                if email_input and "@" in email_input and username_input.strip() and city_input.strip():
+                    conn = get_connection()
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT id, username, city, credits FROM users WHERE email = ?", (email_input,))
+                    user = cursor.fetchone()
+                    if not user:
+                        cursor.execute("INSERT INTO users (email, username, city, credits) VALUES (?, ?, ?, 10)", 
+                                       (email_input, username_input, city_input))
+                        conn.commit()
                     else:
-                        st.error("Remplissez tous les champs.")
-            with c2:
-                if st.button("Retour", use_container_width=True):
-                    st.session_state.step = "ask_code"
+                        cursor.execute("UPDATE users SET username = ?, city = ? WHERE email = ?", 
+                                       (username_input, city_input, email_input))
+                        conn.commit()
+                    conn.close()
+                    
+                    st.session_state.logged_in = True
+                    st.session_state.email = email_input
+                    st.session_state.username = username_input
+                    st.session_state.city = city_input
                     st.rerun()
-
+                else:
+                    st.error("Veuillez remplir tous les champs avec un e-mail valide.")
+                    
         st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# --- APPLICATION PRINCIPALE ---
+# --- APPLICATION PRINCIPALE (APRÈS CONNEXION) ---
 email_input = st.session_state.email
 current_username = st.session_state.username
 city_input = st.session_state.city
@@ -204,11 +174,11 @@ cursor.execute("SELECT credits FROM users WHERE email = ?", (email_input,))
 user_credits = cursor.fetchone()[0]
 conn.close()
 
-# Bannière colorée en haut de l'application principale
+# Bannière colorée dans l'application
 st.markdown(f"""
     <div class="custom-banner">
         <h1>🤝 Entraide & Services Locaux</h1>
-        <p>Bienvenue sur votre réseau solidaire à {city_input} !</p>
+        <p>✨ Bienvenue sur votre réseau solidaire à {city_input} ! ✨</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -221,7 +191,6 @@ st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_credits} p
 
 if st.sidebar.button("Se déconnecter"):
     st.session_state.logged_in = False
-    st.session_state.step = "ask_email"
     st.rerun()
 
 st.sidebar.markdown("---")
