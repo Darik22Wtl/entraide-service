@@ -1,4 +1,4 @@
-mport sqlite3
+import sqlite3
 import streamlit as st
 
 # --- CONFIGURATION DE LA PAGE ---
