@@ -14,7 +14,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- INITIALISATION DE LA BASE DE DONNÉES ---
-DB_NAME = "entraide.db"
+DB_NAME = "entraide_v2.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
