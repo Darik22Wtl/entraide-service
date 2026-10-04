@@ -1,3 +1,4 @@
+import hashlib
 import html
 import hmac
 import os
@@ -10,6 +11,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import streamlit as st
+try:
+    import streamlit.components.v1 as components
+except Exception:
+    components = None
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(
@@ -19,6 +24,8 @@ st.set_page_config(
 CODE_VALIDITY_SECONDS = 600  # 10 minutes
 MAX_CODE_ATTEMPTS = 5
 DB_NAME = "entraide_v14.db"
+SESSION_DAYS = 30
+COOKIE_NAME = "entraide_token"
 
 # --- STYLE CSS ---
 st.markdown(
@@ -71,6 +78,59 @@ st.markdown(
         margin-top: 30px;
         margin-bottom: 30px;
     }
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+    html, body, .stApp, .stMarkdown, button, input, textarea { font-family: 'Poppins', sans-serif; }
+    .stApp::before {
+        content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.22;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Ctext x='15' y='45' font-size='30'%3E🤝%3C/text%3E%3Ctext x='130' y='95' font-size='26'%3E🌻%3C/text%3E%3Ctext x='40' y='140' font-size='26'%3E🏡%3C/text%3E%3Ctext x='150' y='200' font-size='28'%3E💛%3C/text%3E%3Ctext x='85' y='205' font-size='22'%3E🌳%3C/text%3E%3C/svg%3E");
+    }
+    section[data-testid="stSidebar"] { background: linear-gradient(180deg, #fff5f7 0%, #ffd9e0 100%); border-right: 3px solid #ff416c; }
+    .stButton > button, .stFormSubmitButton > button { border-radius: 999px; border: 2px solid #ff416c; font-weight: 600; transition: all .2s; }
+    .stButton > button:hover, .stFormSubmitButton > button:hover { background: #ff416c; color: white; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(255,65,108,.35); }
+    .service-card { transition: transform .2s, box-shadow .2s; }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(255,65,108,.22); }
+    .custom-banner p { font-size: 1.15rem; opacity: .95; }
+    .stats-row, .tiles { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 22px; }
+    .stat-pill { background: rgba(255,255,255,.9); border: 2px solid #ff416c; border-radius: 999px; padding: 8px 22px; font-weight: 600; color: #c2185b; }
+    .tile { flex: 1; min-width: 200px; max-width: 300px; background: #fff; border-radius: 20px; padding: 22px; text-align: center; border-bottom: 6px solid #ff416c; box-shadow: 0 8px 20px rgba(255,65,108,.15); }
+    .tile .big { font-size: 2.4rem; }
+    .tile h4 { margin: 6px 0; color: #d6244f; }
+    .tile p { margin: 0; font-size: .9rem; color: #555; }
+    .space-title { text-align: center; color: #d6244f; font-weight: 800; }
+    .profile-card { display: flex; align-items: center; gap: 22px; background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white; border-radius: 24px; padding: 24px 30px; box-shadow: 0 12px 28px rgba(255,65,108,.35); margin-bottom: 22px; }
+    .profile-card h2 { color: white; margin: 0; }
+    .profile-card p { margin: 4px 0 0; opacity: .95; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: white; color: #ff416c; font-size: 2.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 4px solid rgba(255,255,255,.6); flex-shrink: 0; }
+    .stat-card { background: rgba(255,255,255,.95); border-radius: 18px; padding: 16px 8px; text-align: center; border-top: 5px solid #ff416c; box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+    .stat-icon { font-size: 1.6rem; }
+    .stat-value { font-size: 1.9rem; font-weight: 800; color: #d6244f; line-height: 1.1; }
+    .stat-label { font-size: .8rem; color: #666; }
+    .mini-card { background: #fff; border-radius: 14px; padding: 14px 18px; margin-bottom: 12px; border-left: 6px solid #ff416c; box-shadow: 0 4px 12px rgba(0,0,0,.07); }
+    .mini-card small { color: #666; }
+    .badge { padding: 2px 12px; border-radius: 999px; font-size: .78rem; font-weight: 600; color: white; }
+    .badge.ok { background: #2e9e5b; } .badge.wip { background: #f39c12; } .badge.done { background: #7f8c8d; }
+    .stTabs [data-baseweb="tab"] { font-weight: 600; }
+
+    /* ===== THÈME NOIR ===== */
+    .stApp { background: #000000 !important; }
+    .stApp::before { display: none !important; }
+    .stApp, .stApp p, .stApp li, .stApp label,
+    .stApp [data-testid="stMarkdownContainer"],
+    .stApp [data-testid="stCaptionContainer"],
+    .stApp [data-testid="stMetricLabel"],
+    .stApp [data-testid="stMetricValue"],
+    .stApp .stTabs [data-baseweb="tab"] { color: #f5f5f5; }
+    .stApp [data-testid="stAlert"] p, .stApp [data-testid="stAlert"] div { color: #111111; }
+    .stApp h1, .stApp h2, .stApp h3, .stApp h4 { color: #ffffff; }
+    section[data-testid="stSidebar"] { background: #0b0b0b; }
+    .login-box, .service-card, .tile, .mini-card, .stat-card, .dashboard-section, .stat-pill {
+        background: #141414; color: #f2f2f2; border-color: #3a1f27;
+    }
+    .stat-pill { color: #ff8fa8; }
+    .tile h4, .stat-value { color: #ff6b8a; }
+    .tile p, .stat-label, .mini-card small { color: #bdbdbd; }
+    .stApp .space-title { color: #ff6b8a; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -174,6 +234,11 @@ def init_db():
                 sender_email TEXT NOT NULL REFERENCES users(email),
                 content TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS sessions (
+                token_hash TEXT PRIMARY KEY,
+                email TEXT NOT NULL REFERENCES users(email),
+                expires REAL NOT NULL
+            );
             """
         )
 
@@ -230,15 +295,98 @@ def reset_verification():
     st.session_state.code_attempts = 0
 
 
+
+# --- CONNEXION MÉMORISÉE (cookie + session en base, 30 jours) ---
+def run_js(js):
+    """Exécute du JavaScript dans la page (st.html, sinon ancienne méthode)."""
+    try:
+        st.html(
+            f"<script>(function(){{const W = window; {js}}})();</script>",
+            unsafe_allow_javascript=True,
+        )
+    except TypeError:
+        if components is not None:
+            components.html(
+                f"<script>(function(){{const W = window.parent; {js}}})();</script>",
+                height=0,
+            )
+
+
+def _hash(token):
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def create_session(email):
+    token = secrets.token_urlsafe(32)
+    with db() as conn:
+        conn.execute("DELETE FROM sessions WHERE expires < ?", (time.time(),))
+        conn.execute(
+            "INSERT INTO sessions (token_hash, email, expires) VALUES (?, ?, ?)",
+            (_hash(token), email, time.time() + SESSION_DAYS * 86400),
+        )
+    return token
+
+
+def get_cookie_token():
+    try:
+        return st.context.cookies.get(COOKIE_NAME)
+    except Exception:
+        return None
+
+
+def user_from_token(token):
+    if not token:
+        return None
+    with db() as conn:
+        return conn.execute(
+            """SELECT u.email, u.username, u.city FROM sessions s
+               JOIN users u ON u.email = s.email
+               WHERE s.token_hash = ? AND s.expires > ?""",
+            (_hash(token), time.time()),
+        ).fetchone()
+
+
+def delete_session(token):
+    if token:
+        with db() as conn:
+            conn.execute("DELETE FROM sessions WHERE token_hash = ?", (_hash(token),))
+
+
+if not st.session_state.logged_in and not st.session_state.get("just_logged_out"):
+    found = user_from_token(get_cookie_token())
+    if found:
+        st.session_state.logged_in = True
+        st.session_state.email, st.session_state.username, st.session_state.city = found
+
 # --- ÉCRAN DE CONNEXION AVEC VÉRIFICATION PAR E-MAIL ---
 if not st.session_state.logged_in:
     st.markdown(
         """
         <div class="custom-banner">
             <h1>🤝 Entraide & Services Locaux</h1>
-            <p>🌟 Connectez-vous avec un code reçu par e-mail ! 🌟</p>
+            <p>🌟 Le réseau solidaire de vos voisins : échangez, aidez, partagez ! 🌟</p>
         </div>
         """,
+        unsafe_allow_html=True,
+    )
+
+    with db() as conn:
+        n_users = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        n_serv = conn.execute("SELECT COUNT(*) FROM services").fetchone()[0]
+        n_done = conn.execute(
+            "SELECT COUNT(*) FROM services WHERE status = 'terminé'"
+        ).fetchone()[0]
+    st.markdown(
+        f"""<div class="stats-row">
+<span class="stat-pill">👥 {n_users} voisins</span>
+<span class="stat-pill">📋 {n_serv} services</span>
+<span class="stat-pill">✅ {n_done} échanges réalisés</span>
+</div>
+<div class="tiles">
+<div class="tile"><div class="big">📝</div><h4>1. Proposez</h4><p>Publiez un service : bricolage, cours, jardinage...</p></div>
+<div class="tile"><div class="big">🤝</div><h4>2. Échangez</h4><p>Discutez avec vos voisins et prenez un service.</p></div>
+<div class="tile"><div class="big">💰</div><h4>3. Gagnez</h4><p>10 crédits offerts à l'inscription, à dépenser ou à gagner !</p></div>
+</div>""",
         unsafe_allow_html=True,
     )
 
@@ -327,6 +475,10 @@ if not st.session_state.logged_in:
                                 st.session_state.temp_city,
                             ),
                         )
+                    st.session_state.new_token = create_session(
+                        st.session_state.temp_email
+                    )
+                    st.session_state.just_logged_out = False
                     st.session_state.logged_in = True
                     st.session_state.email = st.session_state.temp_email
                     st.session_state.username = st.session_state.temp_username
@@ -359,6 +511,13 @@ if not row:  # compte introuvable : on déconnecte proprement
 
 current_username, city_input, user_credits = row
 
+if st.session_state.get("new_token"):
+    _token = st.session_state.pop("new_token")
+    run_js(
+        f"W.document.cookie = '{COOKIE_NAME}={_token};"
+        f" max-age={SESSION_DAYS * 86400}; path=/; SameSite=Lax; Secure';"
+    )
+
 st.markdown(
     f"""
     <div class="custom-banner">
@@ -370,13 +529,16 @@ st.markdown(
 )
 
 st.sidebar.markdown("### 🌳 🌻 Mon Profil Voisin")
-st.sidebar.success(f"Connecté : *{current_username}*")
-st.sidebar.write(f"📧 E-mail : {current_email}")
-st.sidebar.write(f"📍 Ville : *{city_input}*")
+st.sidebar.success(f"Connecté : **{current_username}**")
+st.sidebar.write(f"📧 E-mail : *{current_email}*")
+st.sidebar.write(f"📍 Ville : **{city_input}**")
 st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_credits} pts")
+st.sidebar.caption("Version 4 · fond noir")
 
 if st.sidebar.button("🚪 Se déconnecter"):
+    delete_session(get_cookie_token())
     st.session_state.clear()
+    st.session_state.just_logged_out = True
     st.rerun()
 
 st.sidebar.markdown("---")
@@ -391,7 +553,7 @@ menu = st.sidebar.selectbox(
 )
 
 category_icons = {
-    "🛠️ Bricolage & Réparation": "🛠️",
+    "🛠 Bricolage & Réparation": "🛠️",
     "🌱 Jardinage & Extérieur": "🌱",
     "📚 Cours & Soutien scolaire": "📚",
     "🍳 Cuisine & Repas": "🍳",
@@ -483,7 +645,7 @@ if menu == "🔍 Services dans ma ville":
                             st.rerun()
 
                 elif status == "en cours":
-                    st.info(f"🔄 Réalisé par : *{completed_by}*")
+                    st.info(f"🔄 Réalisé par : **{completed_by}**")
                     if current_email in (author_email, completed_by_email) and st.button(
                         "Marquer comme terminé", key=f"finish_{service_id}"
                     ):
@@ -575,109 +737,133 @@ elif menu == "📋 Mes services partagés":
                     unsafe_allow_html=True,
                 )
                 if status == "en cours":
-                    st.info(f"Pris en charge par : *{completed_by}*")
+                    st.info(f"Pris en charge par : **{completed_by}**")
                 elif status == "terminé":
                     st.success("Réalisé avec succès !")
                 st.divider()
 
 # ==========================================
-# CASES DU BAS : DISCUSSIONS, LIKES, SERVICES PUBLIÉS
+# MON ESPACE PERSONNEL
 # ==========================================
+def badge(status):
+    cls = {"disponible": "ok", "en cours": "wip", "terminé": "done"}.get(status, "ok")
+    return f'<span class="badge {cls}">{esc(status)}</span>'
+
+
 st.markdown("---")
+st.markdown("<h2 class='space-title'>🏡 Mon espace personnel</h2>", unsafe_allow_html=True)
+
+me = current_email
+with db() as conn:
+    published, taken, received_likes, done = conn.execute(
+        """SELECT
+             (SELECT COUNT(*) FROM services WHERE author_email = ?),
+             (SELECT COUNT(*) FROM services WHERE completed_by_email = ?),
+             (SELECT COUNT(*) FROM likes l JOIN services s ON s.id = l.service_id
+                WHERE s.author_email = ?),
+             (SELECT COUNT(*) FROM services WHERE status = 'terminé'
+                AND (author_email = ? OR completed_by_email = ?))""",
+        (me, me, me, me, me),
+    ).fetchone()
+    discussions = conn.execute(
+        """SELECT u.username, s.title, m.content
+           FROM messages m
+           JOIN services s ON m.service_id = s.id
+           JOIN users u ON u.email = m.sender_email
+           WHERE m.sender_email != ?
+             AND (s.author_email = ? OR s.completed_by_email = ?
+                  OR m.service_id IN (
+                      SELECT service_id FROM messages WHERE sender_email = ?))
+           ORDER BY m.id DESC LIMIT 10""",
+        (me, me, me, me),
+    ).fetchall()
+    city_likes = conn.execute(
+        """SELECT s.title, a.username, lu.username
+           FROM likes l
+           JOIN services s ON l.service_id = s.id
+           JOIN users a ON a.email = s.author_email
+           JOIN users lu ON lu.email = l.user_email
+           WHERE s.city = ? ORDER BY l.id DESC LIMIT 10""",
+        (city_input,),
+    ).fetchall()
+    my_pubs = conn.execute(
+        "SELECT title, category, status, cost FROM services"
+        " WHERE author_email = ? ORDER BY id DESC",
+        (me,),
+    ).fetchall()
+    my_taken = conn.execute(
+        """SELECT s.title, a.username, s.status, s.cost
+           FROM services s JOIN users a ON a.email = s.author_email
+           WHERE s.completed_by_email = ? ORDER BY s.id DESC""",
+        (me,),
+    ).fetchall()
+
 st.markdown(
-    "<h2 style='text-align: center; color: #d6244f; font-weight: 900;'>📌 Vos"
-    " espaces personnels (Discussions, Likes & Publications)</h2>",
+    f"""<div class="profile-card">
+<div class="avatar">{esc(current_username[:1].upper())}</div>
+<div><h2>{esc(current_username)}</h2>
+<p>📍 {esc(city_input)} &nbsp;·&nbsp; 📧 {esc(current_email)}</p></div>
+</div>""",
     unsafe_allow_html=True,
 )
 
-col_d, col_l, col_p = st.columns(3)
+stats = [
+    ("💰", user_credits, "Crédits"),
+    ("📋", published, "Publiés"),
+    ("🤝", taken, "Services pris"),
+    ("✅", done, "Terminés"),
+    ("❤️", received_likes, "Likes reçus"),
+]
+for col, (icon, value, label) in zip(st.columns(len(stats)), stats):
+    col.markdown(
+        f'<div class="stat-card"><div class="stat-icon">{icon}</div>'
+        f'<div class="stat-value">{value}</div>'
+        f'<div class="stat-label">{label}</div></div>',
+        unsafe_allow_html=True,
+    )
 
-# 1. CASE DISCUSSIONS
-with col_d:
-    st.markdown('<div class="dashboard-section">', unsafe_allow_html=True)
-    st.markdown("### 💬 Vos Discussions")
-    st.write("Les personnes avec qui vous échangez :")
+st.write("")
+tab_d, tab_l, tab_p, tab_t = st.tabs(
+    ["💬 Discussions", "❤️ Likes", "📋 Mes publications", "🤝 Services pris"]
+)
 
-    with db() as conn:
-        discussions = conn.execute(
-            """
-            SELECT u.username, s.title, m.content
-            FROM messages m
-            JOIN services s ON m.service_id = s.id
-            JOIN users u ON u.email = m.sender_email
-            WHERE m.sender_email != ?
-              AND (s.author_email = ? OR s.completed_by_email = ?
-                   OR m.service_id IN (
-                       SELECT service_id FROM messages WHERE sender_email = ?))
-            ORDER BY m.id DESC
-            LIMIT 5
-            """,
-            (current_email, current_email, current_email, current_email),
-        ).fetchall()
-
+with tab_d:
     if not discussions:
         st.info("Aucune discussion active pour le moment.")
-    else:
-        for sender, title, content in discussions:
-            st.markdown(
-                f"💬 *@{esc(sender)}* (sur {esc(title)}) :<br>"
-                f"<small>\"{esc(content)}\"</small>",
-                unsafe_allow_html=True,
-            )
-            st.divider()
-    st.markdown("</div>", unsafe_allow_html=True)
+    for sender, title, content in discussions:
+        st.markdown(
+            f'<div class="mini-card">💬 <b>@{esc(sender)}</b> sur <i>{esc(title)}</i>'
+            f'<br><small>"{esc(content)}"</small></div>',
+            unsafe_allow_html=True,
+        )
 
-# 2. CASE LIKES
-with col_l:
-    st.markdown('<div class="dashboard-section">', unsafe_allow_html=True)
-    st.markdown("### ❤️ Likes dans votre ville")
-    st.write(f"Services likés à {city_input} :")
-
-    with db() as conn:
-        city_likes = conn.execute(
-            """
-            SELECT s.title, a.username, lu.username
-            FROM likes l
-            JOIN services s ON l.service_id = s.id
-            JOIN users a ON a.email = s.author_email
-            JOIN users lu ON lu.email = l.user_email
-            WHERE s.city = ?
-            ORDER BY l.id DESC
-            """,
-            (city_input,),
-        ).fetchall()
-
+with tab_l:
+    st.caption(f"Derniers likes à {city_input}")
     if not city_likes:
         st.info("Aucun like enregistré pour l'instant dans votre ville.")
-    else:
-        for title, author, liker in city_likes:
-            st.markdown(
-                f"❤️ *@{esc(liker)}* a aimé {esc(title)} (de @{esc(author)})",
-                unsafe_allow_html=True,
-            )
-            st.divider()
-    st.markdown("</div>", unsafe_allow_html=True)
+    for title, author, liker in city_likes:
+        st.markdown(
+            f'<div class="mini-card">❤️ <b>@{esc(liker)}</b> a aimé <i>{esc(title)}</i>'
+            f'<br><small>de @{esc(author)}</small></div>',
+            unsafe_allow_html=True,
+        )
 
-# 3. CASE SERVICES PUBLIÉS
-with col_p:
-    st.markdown('<div class="dashboard-section">', unsafe_allow_html=True)
-    st.markdown("### 📋 Vos Services Publiés")
-    st.write("Récapitulatif de vos annonces :")
-
-    with db() as conn:
-        my_pubs = conn.execute(
-            "SELECT title, category, status, cost FROM services"
-            " WHERE author_email = ? ORDER BY id DESC",
-            (current_email,),
-        ).fetchall()
-
+with tab_p:
     if not my_pubs:
         st.info("Vous n'avez encore publié aucun service.")
-    else:
-        for title, cat, status, cost in my_pubs:
-            st.markdown(
-                f"🔹 *{esc(title)}* ({esc(cat)})<br>💰 {cost} pts | Statut : {esc(status)}",
-                unsafe_allow_html=True,
-            )
-            st.divider()
-    st.markdown("</div>", unsafe_allow_html=True)
+    for title, cat, status, cost in my_pubs:
+        st.markdown(
+            f'<div class="mini-card">🔹 <b>{esc(title)}</b> {badge(status)}'
+            f'<br><small>{esc(cat)} · 💰 {cost} pts</small></div>',
+            unsafe_allow_html=True,
+        )
+
+with tab_t:
+    if not my_taken:
+        st.info("Vous n'avez pas encore pris de service.")
+    for title, author, status, cost in my_taken:
+        st.markdown(
+            f'<div class="mini-card">🤝 <b>{esc(title)}</b> {badge(status)}'
+            f'<br><small>proposé par @{esc(author)} · 💰 {cost} pts</small></div>',
+            unsafe_allow_html=True,
+        )
