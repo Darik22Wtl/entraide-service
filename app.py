@@ -121,7 +121,6 @@ st.markdown(
     .stApp [data-testid="stMetricLabel"],
     .stApp [data-testid="stMetricValue"],
     .stApp .stTabs [data-baseweb="tab"] { color: #f5f5f5; }
-    .stApp [data-testid="stAlert"] p, .stApp [data-testid="stAlert"] div { color: #111111; }
     .stApp h1, .stApp h2, .stApp h3, .stApp h4 { color: #ffffff; }
     section[data-testid="stSidebar"] { background: #0b0b0b; }
     .login-box, .service-card, .tile, .mini-card, .stat-card, .dashboard-section, .stat-pill {
@@ -131,6 +130,42 @@ st.markdown(
     .tile h4, .stat-value { color: #ff6b8a; }
     .tile p, .stat-label, .mini-card small { color: #bdbdbd; }
     .stApp .space-title { color: #ff6b8a; }
+
+    /* ===== CONTRASTES (lisibilité sur fond noir) ===== */
+    section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background: #101010 !important; }
+    .login-box, .service-card, .tile, .mini-card, .stat-card, .stat-pill {
+        background: #1f1f1f !important; border: 1px solid rgba(255,65,108,.45); border-left: 6px solid #ff416c;
+    }
+    .stat-card, .tile { border-left: 1px solid rgba(255,65,108,.45); }
+    .stApp hr { border-color: #3a3a3a !important; }
+    .stApp a { color: #7db7ff; }
+    /* boutons : fond sombre, texte blanc, contour rose */
+    .stApp .stButton > button, .stApp .stFormSubmitButton > button, .stApp .stDownloadButton > button {
+        background: #262626 !important; color: #ffffff !important; border: 2px solid #ff416c !important;
+    }
+    .stApp .stButton > button *, .stApp .stFormSubmitButton > button * { color: #ffffff !important; }
+    .stApp .stButton > button:hover, .stApp .stFormSubmitButton > button:hover { background: #ff416c !important; }
+    .stApp button[kind="primary"], .stApp button[kind="primaryFormSubmit"],
+    .stApp [data-testid="stBaseButton-primary"], .stApp [data-testid="stBaseButton-primaryFormSubmit"] {
+        background: #ff416c !important; color: #ffffff !important; border: 2px solid #ffffff !important;
+    }
+    /* champs de saisie et listes : fond gris foncé, texte blanc */
+    .stApp input, .stApp textarea, .stApp [data-baseweb="select"] > div,
+    .stApp [data-baseweb="input"], .stApp [data-baseweb="base-input"], .stApp [data-baseweb="textarea"] {
+        background: #262626 !important; color: #ffffff !important; border-color: #ff416c !important;
+    }
+    .stApp [data-baseweb="select"] * { color: #ffffff !important; }
+    .stApp [data-baseweb="select"] svg { fill: #ffffff !important; }
+    .stApp input::placeholder, .stApp textarea::placeholder { color: #a0a0a0 !important; }
+    .stApp [data-testid="stNumberInput"] button { background: #262626 !important; color: #ffffff !important; }
+    /* messages (info, succès, erreur) : fond opaque + texte blanc */
+    .stApp [data-testid="stAlertContainer"] {
+        background: #16263d !important; border: 1px solid #3b82f6; border-radius: 12px;
+    }
+    .stApp [data-testid="stAlertContainer"]:has([data-testid="stAlertContentSuccess"]) { background: #12301d !important; border-color: #22c55e; }
+    .stApp [data-testid="stAlertContainer"]:has([data-testid="stAlertContentWarning"]) { background: #3a2d10 !important; border-color: #f59e0b; }
+    .stApp [data-testid="stAlertContainer"]:has([data-testid="stAlertContentError"]) { background: #3b1519 !important; border-color: #ef4444; }
+    .stApp [data-testid="stAlertContainer"], .stApp [data-testid="stAlertContainer"] * { color: #ffffff !important; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -533,7 +568,7 @@ st.sidebar.success(f"Connecté : **{current_username}**")
 st.sidebar.write(f"📧 E-mail : *{current_email}*")
 st.sidebar.write(f"📍 Ville : **{city_input}**")
 st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_credits} pts")
-st.sidebar.caption("Version 4 · fond noir")
+st.sidebar.caption("Version 5 · couleurs contrastées")
 
 if st.sidebar.button("🚪 Se déconnecter"):
     delete_session(get_cookie_token())
