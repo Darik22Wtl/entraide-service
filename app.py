@@ -34,21 +34,21 @@ st.markdown(
     .stApp {
         background-color: #ffecd2;
         background-image:
-            radial-gradient(rgba(255, 65, 108, 0.12) 2px, transparent 2px),
-            linear-gradient(45deg, rgba(255, 65, 108, 0.08) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(255, 65, 108, 0.08) 25%, transparent 25%),
-            linear-gradient(45deg, transparent 75%, rgba(255, 65, 108, 0.08) 75%),
-            linear-gradient(-45deg, transparent 75%, rgba(255, 65, 108, 0.08) 75%);
+            radial-gradient(rgba(192, 80, 90, 0.12) 2px, transparent 2px),
+            linear-gradient(45deg, rgba(192, 80, 90, 0.08) 25%, transparent 25%),
+            linear-gradient(-45deg, rgba(192, 80, 90, 0.08) 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, rgba(192, 80, 90, 0.08) 75%),
+            linear-gradient(-45deg, transparent 75%, rgba(192, 80, 90, 0.08) 75%);
         background-size: 60px 60px, 40px 40px, 40px 40px, 40px 40px, 40px 40px;
         background-position: 0 0, 0 0, 0 20px, 20px -20px, -20px 0px;
     }
     .custom-banner {
-        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        background: linear-gradient(135deg, #c0505a 0%, #c9684f 100%);
         padding: 45px 25px;
         border-radius: 25px;
         color: white;
         text-align: center;
-        box-shadow: 0 15px 35px rgba(255, 65, 108, 0.4);
+        box-shadow: 0 15px 35px rgba(192, 80, 90, 0.4);
         margin-bottom: 30px;
         border: 3px solid rgba(255, 255, 255, 0.6);
     }
@@ -58,7 +58,7 @@ st.markdown(
         padding: 40px;
         border-radius: 24px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        border-top: 10px solid #ff416c;
+        border-top: 10px solid #c0505a;
     }
     .service-card {
         background-color: #ffffff;
@@ -66,14 +66,14 @@ st.markdown(
         border-radius: 18px;
         margin-bottom: 22px;
         border: 1px solid #ffdde1;
-        border-left: 8px solid #ff416c;
-        box-shadow: 0 8px 20px rgba(255, 65, 108, 0.1);
+        border-left: 8px solid #c0505a;
+        box-shadow: 0 8px 20px rgba(192, 80, 90, 0.1);
     }
     .dashboard-section {
         background: rgba(255, 255, 255, 0.9);
         padding: 25px;
         border-radius: 20px;
-        border: 2px solid #ff416c;
+        border: 2px solid #c0505a;
         box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         margin-top: 30px;
         margin-bottom: 30px;
@@ -85,35 +85,35 @@ st.markdown(
         content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.22;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Ctext x='15' y='45' font-size='30'%3E🤝%3C/text%3E%3Ctext x='130' y='95' font-size='26'%3E🌻%3C/text%3E%3Ctext x='40' y='140' font-size='26'%3E🏡%3C/text%3E%3Ctext x='150' y='200' font-size='28'%3E💛%3C/text%3E%3Ctext x='85' y='205' font-size='22'%3E🌳%3C/text%3E%3C/svg%3E");
     }
-    section[data-testid="stSidebar"] { background: linear-gradient(180deg, #fff5f7 0%, #ffd9e0 100%); border-right: 3px solid #ff416c; }
-    .stButton > button, .stFormSubmitButton > button { border-radius: 999px; border: 2px solid #ff416c; font-weight: 600; transition: all .2s; }
-    .stButton > button:hover, .stFormSubmitButton > button:hover { background: #ff416c; color: white; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(255,65,108,.35); }
+    section[data-testid="stSidebar"] { background: linear-gradient(180deg, #fff5f7 0%, #ffd9e0 100%); border-right: 3px solid #c0505a; }
+    .stButton > button, .stFormSubmitButton > button { border-radius: 999px; border: 2px solid #c0505a; font-weight: 600; transition: all .2s; }
+    .stButton > button:hover, .stFormSubmitButton > button:hover { background: #c0505a; color: white; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(192, 80, 90,.35); }
     .service-card { transition: transform .2s, box-shadow .2s; }
-    .service-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(255,65,108,.22); }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(192, 80, 90,.22); }
     .custom-banner p { font-size: 1.15rem; opacity: .95; }
     .stats-row, .tiles { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 22px; }
-    .stat-pill { background: rgba(255,255,255,.9); border: 2px solid #ff416c; border-radius: 999px; padding: 8px 22px; font-weight: 600; color: #c2185b; }
-    .tile { flex: 1; min-width: 200px; max-width: 300px; background: #fff; border-radius: 20px; padding: 22px; text-align: center; border-bottom: 6px solid #ff416c; box-shadow: 0 8px 20px rgba(255,65,108,.15); }
+    .stat-pill { background: rgba(255,255,255,.9); border: 2px solid #c0505a; border-radius: 999px; padding: 8px 22px; font-weight: 600; color: #eaa0a7; }
+    .tile { flex: 1; min-width: 200px; max-width: 300px; background: #fff; border-radius: 20px; padding: 22px; text-align: center; border-bottom: 6px solid #c0505a; box-shadow: 0 8px 20px rgba(192, 80, 90,.15); }
     .tile .big { font-size: 2.4rem; }
-    .tile h4 { margin: 6px 0; color: #d6244f; }
+    .tile h4 { margin: 6px 0; color: #eaa0a7; }
     .tile p { margin: 0; font-size: .9rem; color: #555; }
-    .space-title { text-align: center; color: #d6244f; font-weight: 800; }
-    .profile-card { display: flex; align-items: center; gap: 22px; background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white; border-radius: 24px; padding: 24px 30px; box-shadow: 0 12px 28px rgba(255,65,108,.35); margin-bottom: 22px; }
+    .space-title { text-align: center; color: #eaa0a7; font-weight: 800; }
+    .profile-card { display: flex; align-items: center; gap: 22px; background: linear-gradient(135deg, #c0505a, #c9684f); color: white; border-radius: 24px; padding: 24px 30px; box-shadow: 0 12px 28px rgba(192, 80, 90,.35); margin-bottom: 22px; }
     .profile-card h2 { color: white; margin: 0; }
     .profile-card p { margin: 4px 0 0; opacity: .95; }
-    .avatar { width: 72px; height: 72px; border-radius: 50%; background: white; color: #ff416c; font-size: 2.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 4px solid rgba(255,255,255,.6); flex-shrink: 0; }
-    .stat-card { background: rgba(255,255,255,.95); border-radius: 18px; padding: 16px 8px; text-align: center; border-top: 5px solid #ff416c; box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: white; color: #c0505a; font-size: 2.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 4px solid rgba(255,255,255,.6); flex-shrink: 0; }
+    .stat-card { background: rgba(255,255,255,.95); border-radius: 18px; padding: 16px 8px; text-align: center; border-top: 5px solid #c0505a; box-shadow: 0 6px 16px rgba(0,0,0,.08); }
     .stat-icon { font-size: 1.6rem; }
-    .stat-value { font-size: 1.9rem; font-weight: 800; color: #d6244f; line-height: 1.1; }
+    .stat-value { font-size: 1.9rem; font-weight: 800; color: #eaa0a7; line-height: 1.1; }
     .stat-label { font-size: .8rem; color: #666; }
-    .mini-card { background: #fff; border-radius: 14px; padding: 14px 18px; margin-bottom: 12px; border-left: 6px solid #ff416c; box-shadow: 0 4px 12px rgba(0,0,0,.07); }
+    .mini-card { background: #fff; border-radius: 14px; padding: 14px 18px; margin-bottom: 12px; border-left: 6px solid #c0505a; box-shadow: 0 4px 12px rgba(0,0,0,.07); }
     .mini-card small { color: #666; }
     .badge { padding: 2px 12px; border-radius: 999px; font-size: .78rem; font-weight: 600; color: white; }
     .badge.ok { background: #2e9e5b; } .badge.wip { background: #f39c12; } .badge.done { background: #7f8c8d; }
     .stTabs [data-baseweb="tab"] { font-weight: 600; }
 
     /* ===== THÈME NOIR ===== */
-    .stApp { background: #000000 !important; }
+    .stApp { background: #1c1530 !important; }
     .stApp::before { display: none !important; }
     .stApp, .stApp p, .stApp li, .stApp label,
     .stApp [data-testid="stMarkdownContainer"],
@@ -122,42 +122,42 @@ st.markdown(
     .stApp [data-testid="stMetricValue"],
     .stApp .stTabs [data-baseweb="tab"] { color: #f5f5f5; }
     .stApp h1, .stApp h2, .stApp h3, .stApp h4 { color: #ffffff; }
-    section[data-testid="stSidebar"] { background: #0b0b0b; }
+    section[data-testid="stSidebar"] { background: #140f24; }
     .login-box, .service-card, .tile, .mini-card, .stat-card, .dashboard-section, .stat-pill {
-        background: #141414; color: #f2f2f2; border-color: #3a1f27;
+        background: #2a2145; color: #f2f2f2; border-color: #4a3f6b;
     }
-    .stat-pill { color: #ff8fa8; }
-    .tile h4, .stat-value { color: #ff6b8a; }
+    .stat-pill { color: #eaa0a7; }
+    .tile h4, .stat-value { color: #eaa0a7; }
     .tile p, .stat-label, .mini-card small { color: #bdbdbd; }
-    .stApp .space-title { color: #ff6b8a; }
+    .stApp .space-title { color: #eaa0a7; }
 
     /* ===== CONTRASTES (lisibilité sur fond noir) ===== */
-    section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background: #101010 !important; }
+    section[data-testid="stSidebar"], section[data-testid="stSidebar"] > div { background: #140f24 !important; }
     .login-box, .service-card, .tile, .mini-card, .stat-card, .stat-pill {
-        background: #1f1f1f !important; border: 1px solid rgba(255,65,108,.45); border-left: 6px solid #ff416c;
+        background: #2a2145 !important; border: 1px solid rgba(192, 80, 90,.45); border-left: 6px solid #c0505a;
     }
-    .stat-card, .tile { border-left: 1px solid rgba(255,65,108,.45); }
-    .stApp hr { border-color: #3a3a3a !important; }
+    .stat-card, .tile { border-left: 1px solid rgba(192, 80, 90,.45); }
+    .stApp hr { border-color: #4a3f6b !important; }
     .stApp a { color: #7db7ff; }
     /* boutons : fond sombre, texte blanc, contour rose */
     .stApp .stButton > button, .stApp .stFormSubmitButton > button, .stApp .stDownloadButton > button {
-        background: #262626 !important; color: #ffffff !important; border: 2px solid #ff416c !important;
+        background: #3a2f5c !important; color: #ffffff !important; border: 2px solid #c0505a !important;
     }
     .stApp .stButton > button *, .stApp .stFormSubmitButton > button * { color: #ffffff !important; }
-    .stApp .stButton > button:hover, .stApp .stFormSubmitButton > button:hover { background: #ff416c !important; }
+    .stApp .stButton > button:hover, .stApp .stFormSubmitButton > button:hover { background: #c0505a !important; }
     .stApp button[kind="primary"], .stApp button[kind="primaryFormSubmit"],
     .stApp [data-testid="stBaseButton-primary"], .stApp [data-testid="stBaseButton-primaryFormSubmit"] {
-        background: #ff416c !important; color: #ffffff !important; border: 2px solid #ffffff !important;
+        background: #c0505a !important; color: #ffffff !important; border: 2px solid #ffffff !important;
     }
     /* champs de saisie et listes : fond gris foncé, texte blanc */
     .stApp input, .stApp textarea, .stApp [data-baseweb="select"] > div,
     .stApp [data-baseweb="input"], .stApp [data-baseweb="base-input"], .stApp [data-baseweb="textarea"] {
-        background: #262626 !important; color: #ffffff !important; border-color: #ff416c !important;
+        background: #3a2f5c !important; color: #ffffff !important; border-color: #c0505a !important;
     }
     .stApp [data-baseweb="select"] * { color: #ffffff !important; }
     .stApp [data-baseweb="select"] svg { fill: #ffffff !important; }
     .stApp input::placeholder, .stApp textarea::placeholder { color: #a0a0a0 !important; }
-    .stApp [data-testid="stNumberInput"] button { background: #262626 !important; color: #ffffff !important; }
+    .stApp [data-testid="stNumberInput"] button { background: #3a2f5c !important; color: #ffffff !important; }
     /* messages (info, succès, erreur) : fond opaque + texte blanc */
     .stApp [data-testid="stAlertContainer"] {
         background: #16263d !important; border: 1px solid #3b82f6; border-radius: 12px;
@@ -568,7 +568,7 @@ st.sidebar.success(f"Connecté : **{current_username}**")
 st.sidebar.write(f"📧 E-mail : *{current_email}*")
 st.sidebar.write(f"📍 Ville : **{city_input}**")
 st.sidebar.metric(label="💰 Vos Crédits Solidaires", value=f"{user_credits} pts")
-st.sidebar.caption("Version 5 · couleurs contrastées")
+st.sidebar.caption("Version 6 · couleurs douces")
 
 if st.sidebar.button("🚪 Se déconnecter"):
     delete_session(get_cookie_token())
